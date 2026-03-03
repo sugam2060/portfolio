@@ -43,23 +43,13 @@ export const getProjectById = async (id: number) => {
     }
 };
 
-export const getProjects = async (page = 1, limit = 6, type?: string) => {
+export const getProjects = async (page = 1, limit = 6) => {
     try {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
         const offset = (page - 1) * limit;
 
-        // Fix: Properly handle type casing and sanitize cache key strings
-        const cleanType = type?.trim();
-        const isAll = !cleanType || cleanType.toLowerCase() === 'all';
-        let filterType: string | null = isAll ? null : cleanType!;
-
-        // Handle common frontend/db mismatch where UI requests "AI/ML" but db stored "AI"
-        if (filterType === 'AI/ML') filterType = 'AI';
-
-        // Slugify the type for safe KV cache key naming
-        const safeCacheType = filterType ? filterType.toLowerCase().replace(/[^a-z0-9]/g, '-') : "all";
-        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}_t_${safeCacheType}`;
+        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}`;
 
         // 1. Try KV Cache
         const cached = await kv.get(cacheKey);
@@ -68,12 +58,9 @@ export const getProjects = async (page = 1, limit = 6, type?: string) => {
         // 2. Fetch from DB
         const db = await getDb();
 
-        const whereClause = filterType ? eq(projects.type, filterType) : undefined;
-
         // Parallel fetch for data and total count
         const [results, totalCount] = await Promise.all([
             db.query.projects.findMany({
-                where: whereClause,
                 columns: {
                     id: true,
                     title: true,
@@ -98,7 +85,6 @@ export const getProjects = async (page = 1, limit = 6, type?: string) => {
             }),
             db.select({ count: sql<number>`count(*)` })
                 .from(projects)
-                .where(whereClause)
         ]);
 
         // Truncate overview if needed and add featured status

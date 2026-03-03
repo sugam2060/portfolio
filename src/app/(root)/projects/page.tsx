@@ -1,6 +1,6 @@
 import FeaturedProjectCard from "@/components/root/Projectpage/FeaturedProjectCard";
 import ProjectGrid from "@/components/root/Projectpage/ProjectGrid";
-import { Sparkles, Bot, ServerCog, Globe, ArrowRight } from "lucide-react";
+import { Bot, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getProjects, getFeaturedProjects } from "@/actions/ProjectActions";
 import { Suspense } from "react";
@@ -10,33 +10,24 @@ export const dynamic = "force-dynamic";
 
 interface SearchParams {
     page?: string;
-    type?: string;
 }
 
 export default async function ProjectsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams;
     const currentPage = parseInt(params.page || "1", 10);
-    const currentType = params.type || "All";
     const limit = 6;
 
     const queryClient = new QueryClient();
 
-    // Prefetch projects with type filter
+    // Prefetch projects
     await queryClient.prefetchQuery({
-        queryKey: ["projects", currentPage, limit, currentType],
-        queryFn: () => getProjects(currentPage, limit, currentType),
+        queryKey: ["projects", currentPage, limit],
+        queryFn: () => getProjects(currentPage, limit),
     });
 
     const featuredData = await getFeaturedProjects();
     const featuredResults = Array.isArray(featuredData) ? featuredData : [];
     const featuredProject = featuredResults[0]?.project;
-
-    const filters = [
-        { label: "All", icon: <Sparkles className="size-4" />, active: currentType === "All" },
-        { label: "AI/ML", icon: <Bot className="size-4" />, active: currentType === "AI/ML" },
-        { label: "Backend", icon: <ServerCog className="size-4" />, active: currentType === "Backend" },
-        { label: "Web Dev", icon: <Globe className="size-4" />, active: currentType === "Web Dev" },
-    ];
 
     return (
         <main className="flex flex-1 justify-center py-10 px-4 md:px-10 lg:px-40">
@@ -52,25 +43,8 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
                     </p>
                 </div>
 
-                <div className="flex gap-3 pb-12 flex-wrap justify-center">
-                    {filters.map((filter, index) => (
-                        <Link
-                            key={index}
-                            href={`?type=${filter.label}`}
-                            scroll={false}
-                            className={`group flex h-10 items-center justify-center gap-x-2 rounded-full px-6 transition-all border ${filter.active
-                                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-                                : "bg-surface-dark dark:bg-[#1b1f27] border-border/50 dark:border-[#282e39] text-muted-foreground dark:text-[#9ca6ba] hover:border-primary/50 hover:text-primary"
-                                }`}
-                        >
-                            {filter.icon}
-                            <span className="text-xs font-black uppercase tracking-widest">{filter.label}</span>
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Featured Project - Only shown on 'All' or if relevant to filter (keeping it simple for now) */}
-                {featuredProject && (currentType === "All" || featuredProject.type === currentType) && (
+                {/* Featured Project */}
+                {featuredProject && (
                     <FeaturedProjectCard project={featuredProject} />
                 )}
 

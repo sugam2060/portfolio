@@ -13,12 +13,11 @@ export default function ProjectGrid() {
     const router = useRouter();
 
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const type = searchParams.get("type") || "All";
     const limit = 6;
 
     const { data: response, isLoading, isPlaceholderData } = useQuery({
-        queryKey: ["projects", page, limit, type],
-        queryFn: () => getProjects(page, limit, type),
+        queryKey: ["projects", page, limit],
+        queryFn: () => getProjects(page, limit),
         placeholderData: (previousData) => previousData,
     });
 
@@ -103,8 +102,8 @@ export default function ProjectGrid() {
                                     key={pageNum}
                                     onClick={() => handlePageChange(pageNum)}
                                     className={`flex items-center justify-center h-12 px-5 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg ${pagination.page === pageNum
-                                            ? "bg-primary text-white shadow-primary/30 border-primary"
-                                            : "bg-surface-dark dark:bg-[#1b1f27] border border-border/50 dark:border-[#282e39] text-muted-foreground dark:text-[#9ca6ba] hover:border-primary/50 hover:text-primary"
+                                        ? "bg-primary text-white shadow-primary/30 border-primary"
+                                        : "bg-surface-dark dark:bg-[#1b1f27] border border-border/50 dark:border-[#282e39] text-muted-foreground dark:text-[#9ca6ba] hover:border-primary/50 hover:text-primary"
                                         }`}
                                 >
                                     {pageNum}

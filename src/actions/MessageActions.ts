@@ -5,8 +5,22 @@ import { messages } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+import { ContactFormSchema } from "@/types/contact";
+
 export const sendMessage = async (data: { name: string; email: string; subject: string; message: string }) => {
     try {
+        // Server-side validation
+        const validation = ContactFormSchema.safeParse({
+            fullName: data.name,
+            email: data.email,
+            subject: data.subject,
+            message: data.message
+        });
+
+        if (!validation.success) {
+            return { success: false, error: "Invalid form data. Please check your inputs." };
+        }
+
         const db = await getDb();
         await db.insert(messages).values(data);
         revalidatePath("/admin/messages");

@@ -1,4 +1,5 @@
 import { Bot } from "lucide-react";
+import { LuEye } from "react-icons/lu";
 import Link from "next/link";
 
 export default function AdminFooter() {
@@ -15,6 +16,10 @@ export default function AdminFooter() {
                 </div>
 
                 <div className="flex items-center gap-8 text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                    <Link href="/" className="flex items-center gap-1.5 hover:text-primary transition-colors group">
+                        <LuEye className="size-3.5 group-hover:scale-110 transition-transform" />
+                        View Site
+                    </Link>
                     <Link href="/admin" className="hover:text-primary transition-colors">Dashboard</Link>
                     <Link href="/admin/settings" className="hover:text-primary transition-colors">Settings</Link>
                     <Link href="/admin/security" className="hover:text-primary transition-colors">Security</Link>

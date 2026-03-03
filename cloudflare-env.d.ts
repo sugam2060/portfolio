@@ -3,13 +3,11 @@
 // Runtime types generated with workerd@1.20260305.0 2026-03-02 global_fetch_strictly_public,nodejs_compat
 declare namespace Cloudflare {
     interface Env {
-        IMAGES: ImagesBinding;
         ASSETS: Fetcher;
         NEXTJS_ENV: string;
-        WORKER_SELF_REFERENCE: Fetcher /* portfolio */;
-        // rms_db: D1Database;
-        // y: R2Bucket;
-        // KV_safari: KVNamespace;
+        portfolio_db: D1Database;
+        portfolio_r2: R2Bucket;
+        portfolio_kv: KVNamespace;
     }
 }
 interface CloudflareEnv extends Cloudflare.Env { }

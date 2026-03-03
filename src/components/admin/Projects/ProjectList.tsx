@@ -15,7 +15,7 @@ export default function ProjectList() {
     const queryClient = useQueryClient();
     const { data: projectsData, isLoading } = useQuery({
         queryKey: ["admin-projects"],
-        queryFn: getProjects,
+        queryFn: () => getProjects(1, 100), // Admin view usually needs more or all
     });
 
     const { mutate: handleDelete, isPending: isDeleting } = useMutation({
@@ -36,7 +36,7 @@ export default function ProjectList() {
 
     if (isLoading) return <div className="flex justify-center p-10"><Spinner className="size-10 text-primary" /></div>;
 
-    const projects = Array.isArray(projectsData) ? projectsData : [];
+    const projects = Array.isArray(projectsData?.data) ? projectsData.data : [];
 
     return (
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-xl mt-6">

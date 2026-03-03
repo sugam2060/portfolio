@@ -3,7 +3,7 @@
 import { getDb } from "@/db";
 import { projects, projectGallery, featuredProjects, projectKeyFeatures } from "@/db/schema";
 import { ProjectSchema } from "@/types/projects";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
@@ -13,28 +13,69 @@ const FEATURED_PROJECTS_CACHE_KEY = "projects_featured";
 
 // --- FETCHING ---
 
-export const getProjects = async () => {
+export const getProjects = async (page = 1, limit = 6) => {
     try {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
+        const offset = (page - 1) * limit;
+        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}`;
 
-        const cached = await kv.get(PROJECTS_CACHE_KEY);
+        // 1. Try KV Cache
+        const cached = await kv.get(cacheKey);
         if (cached) return JSON.parse(cached);
 
+        // 2. Fetch from DB
         const db = await getDb();
-        const results = await db.query.projects.findMany({
-            with: {
-                gallery: true,
-                keyFeatures: true,
-            },
-            orderBy: [desc(projects.createdAt)],
-        });
 
-        await kv.put(PROJECTS_CACHE_KEY, JSON.stringify(results), { expirationTtl: 86400 });
-        return results;
+        // Parallel fetch for data and total count
+        const [results, totalCount] = await Promise.all([
+            db.query.projects.findMany({
+                columns: {
+                    id: true,
+                    title: true,
+                    overview: true,
+                    techStack: true,
+                    type: true,
+                    link: true,
+                },
+                with: {
+                    gallery: {
+                        columns: {
+                            photoUrl: true,
+                        },
+                        limit: 1,
+                    },
+                },
+                orderBy: [desc(projects.createdAt)],
+                limit: limit,
+                offset: offset,
+            }),
+            db.select({ count: sql<number>`count(*)` }).from(projects)
+        ]);
+
+        // Truncate overview if needed
+        const truncatedResults = results.map(p => ({
+            ...p,
+            overview: p.overview.length > 150 ? p.overview.substring(0, 150) + "..." : p.overview
+        }));
+
+        const response = {
+            data: truncatedResults,
+            pagination: {
+                total: totalCount[0].count,
+                page,
+                limit,
+                totalPages: Math.ceil(totalCount[0].count / limit),
+            }
+        };
+
+        // 3. Cache it
+        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 3600 }); // 1 hour for paginated pages
+
+        return response;
     } catch (error) {
         console.error("getProjects error:", error);
-        return { error: "Failed to fetch projects" };
+        return { error: "Failed to fetch projects", data: [], pagination: { total: 0, page, limit: 6, totalPages: 0 } };
     }
 };
 
@@ -51,7 +92,7 @@ export const getFeaturedProjects = async () => {
             with: {
                 project: {
                     with: {
-                        gallery: true,
+                        gallery: { limit: 1 },
                         keyFeatures: true,
                     },
                 },
@@ -63,7 +104,7 @@ export const getFeaturedProjects = async () => {
         return results;
     } catch (error) {
         console.error("getFeaturedProjects error:", error);
-        return { error: "Failed to fetch featured projects" };
+        return [];
     }
 };
 

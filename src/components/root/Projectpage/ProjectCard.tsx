@@ -1,75 +1,102 @@
 "use client";
 
-import { ExternalLink, Layers } from "lucide-react";
 import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { LuExternalLink, LuLayers, LuSparkles } from "react-icons/lu";
+import Image from "next/image";
 import Link from "next/link";
 
 interface ProjectCardProps {
     id: number;
     title: string;
     description: string;
-    imageUrl?: string;
-    technologies: string[];
     type: string;
+    technologies: string[];
+    imageUrl?: string;
     link?: string;
 }
 
 export default function ProjectCard({
     title,
     description,
-    imageUrl,
-    technologies,
     type,
-    link = "#"
+    technologies,
+    imageUrl,
+    link
 }: ProjectCardProps) {
     return (
         <motion.div
             variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { duration: 0.5, ease: "easeOut" }
-                }
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
             }}
-            className="group flex flex-col rounded-xl bg-surface-dark dark:bg-[#1b1f27] border border-border/50 dark:border-[#282e39] overflow-hidden transition-all hover:border-primary/50 hover:-translate-y-1 duration-300"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="group h-full"
         >
-            <Link href={link} className="flex flex-col h-full">
-                <div className="relative h-48 overflow-hidden bg-primary/5 flex items-center justify-center border-b border-border/10">
+            <Card className="relative overflow-hidden h-full border-border/50 dark:border-[#282e39] bg-surface-dark dark:bg-[#11141a]/80 backdrop-blur-md hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 flex flex-col">
+                {/* Image Section */}
+                <div className="relative aspect-[16/10] overflow-hidden">
+                    <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
                     {imageUrl ? (
-                        <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                            style={{ backgroundImage: `url("${imageUrl}")` }}
-                            aria-label={title}
-                        ></div>
+                        <Image
+                            src={imageUrl}
+                            alt={title}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
                     ) : (
-                        <div className="flex flex-col items-center gap-2 text-primary/40 group-hover:text-primary transition-colors">
-                            <Layers className="size-16" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">{type}</span>
+                        <div className="w-full h-full bg-[#1b1f27] flex items-center justify-center">
+                            <LuLayers className="size-12 text-muted-foreground/20" />
                         </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface-dark dark:from-[#1b1f27] to-transparent opacity-60"></div>
-                </div>
-                <div className="flex flex-col flex-1 p-5">
-                    <div className="flex justify-between items-start mb-2 gap-2">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] uppercase font-bold text-primary tracking-widest">{type}</span>
-                            <h4 className="text-foreground dark:text-white text-lg font-bold group-hover:text-primary transition-colors">{title}</h4>
-                        </div>
-                        <ExternalLink className="size-5 text-muted-foreground dark:text-[#9ca6ba] group-hover:text-primary transition-colors shrink-0" />
+
+                    {/* Floating Badge */}
+                    <div className="absolute top-4 left-4 z-20">
+                        <Badge className="bg-primary/90 text-white border-0 px-3 py-1 text-[10px] font-black uppercase tracking-widest backdrop-blur-md">
+                            {type}
+                        </Badge>
                     </div>
-                    <p className="text-muted-foreground dark:text-[#9ca6ba] text-sm mb-4 flex-1 line-clamp-3">
+                </div>
+
+                <CardContent className="p-6 flex flex-col flex-1">
+                    <div className="flex items-start justify-between mb-3 gap-2">
+                        <h3 className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-1 uppercase">
+                            {title}
+                        </h3>
+                        {link && (
+                            <Link
+                                href={link}
+                                target="_blank"
+                                className="p-2 rounded-lg bg-primary/10 text-primary opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100"
+                            >
+                                <LuExternalLink className="size-4" />
+                            </Link>
+                        )}
+                    </div>
+
+                    <p className="text-muted-foreground dark:text-[#9ca6ba] text-sm font-medium leading-relaxed mb-6 line-clamp-3">
                         {description}
                     </p>
-                    <div className="flex flex-wrap gap-1.5 mt-auto">
-                        {technologies?.map((tech) => (
-                            <span key={tech} className="text-[10px] font-extrabold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-md uppercase tracking-tighter">
+
+                    <div className="mt-auto pt-4 border-t border-border/20 flex flex-wrap gap-2">
+                        {technologies.slice(0, 3).map((tech) => (
+                            <span
+                                key={tech}
+                                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-tighter text-primary/70 bg-primary/5 px-2 py-1 rounded"
+                            >
+                                <LuSparkles className="size-2" />
                                 {tech}
                             </span>
                         ))}
+                        {technologies.length > 3 && (
+                            <span className="text-[10px] font-bold text-muted-foreground/50 self-center">
+                                +{technologies.length - 3}
+                            </span>
+                        )}
                     </div>
-                </div>
-            </Link>
+                </CardContent>
+            </Card>
         </motion.div>
     );
 }

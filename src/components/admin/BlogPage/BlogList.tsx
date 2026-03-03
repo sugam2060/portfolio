@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBlogs, deleteBlog } from "@/actions/BlogActions";
 import { Button } from "@/components/ui/button";
-import { LuPlus, LuTrash2, LuExternalLink, LuClock } from "react-icons/lu";
+import { LuPlus, LuTrash2, LuExternalLink, LuClock, LuPencil } from "react-icons/lu";
 import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,8 +103,13 @@ export default function BlogList() {
                                         <td className="p-4 text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Link href={`/blogs/${blog.id}`} target="_blank">
-                                                    <Button variant="ghost" size="icon" className="size-8">
+                                                    <Button variant="ghost" size="icon" className="size-8" title="View Article">
                                                         <LuExternalLink className="size-4" />
+                                                    </Button>
+                                                </Link>
+                                                <Link href={`/admin/blogs/${blog.id}`}>
+                                                    <Button variant="ghost" size="icon" className="size-8" title="Edit Article">
+                                                        <LuPencil className="size-4" />
                                                     </Button>
                                                 </Link>
                                                 <Button
@@ -156,6 +161,6 @@ export default function BlogList() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

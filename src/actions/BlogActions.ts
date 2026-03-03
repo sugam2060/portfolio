@@ -130,6 +130,79 @@ export const createBlog = async (formData: FormData) => {
     }
 };
 
+export const updateBlog = async (id: number, formData: FormData) => {
+    try {
+        const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
+        const db = await getDb();
+        const kv = env.portfolio_kv;
+        const bucket = env["portfolio-r2"];
+
+        // 1. Get existing blog
+        const [existing] = await db.select().from(blogs).where(eq(blogs.id, id)).limit(1);
+        if (!existing) return { error: "Article not found." };
+
+        const rawData = {
+            title: formData.get("title") as string,
+            description: formData.get("description") as string,
+            readTime: formData.get("readTime") as string,
+            type: formData.get("type") as string,
+            imageUrl: existing.imageUrl || "",
+        };
+
+        const validation = BlogSchema.safeParse(rawData);
+        if (!validation.success) {
+            return { error: validation.error.flatten().fieldErrors };
+        }
+
+        let finalImageUrl = existing.imageUrl;
+        const file = formData.get("image") as File;
+
+        // 2. Handle Image Update
+        if (file && file.size > 0) {
+            // Upload new
+            const fileName = `blogs/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+            await bucket.put(fileName, await file.arrayBuffer(), {
+                httpMetadata: { contentType: file.type }
+            });
+
+            const baseUrl = env.R2_PUBLIC_URL || "";
+            finalImageUrl = `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${fileName}`;
+
+            // Delete old from R2
+            if (existing.imageUrl) {
+                try {
+                    const url = new URL(existing.imageUrl);
+                    const key = url.pathname.slice(1);
+                    await bucket.delete(key);
+                } catch (e) {
+                    console.error("Old R2 image cleanup failed:", e);
+                }
+            }
+        }
+
+        // 3. Update DB
+        await db.update(blogs).set({
+            ...validation.data,
+            imageUrl: finalImageUrl,
+            updatedAt: new Date(),
+        }).where(eq(blogs.id, id));
+
+        // 4. Invalidate caches
+        const blogKeys = await kv.list({ prefix: BLOGS_CACHE_KEY });
+        const deletes = blogKeys.keys.map(key => kv.delete(key.name));
+        deletes.push(kv.delete(`${BLOG_DETAIL_CACHE_KEY}_${id}`));
+        await Promise.all(deletes);
+
+        revalidatePath("/blogs");
+        revalidatePath("/admin/blogs");
+
+        return { success: "Article updated successfully!" };
+    } catch (error: any) {
+        console.error("updateBlog error:", error);
+        return { error: error.message || "Failed to update blog." };
+    }
+};
+
 export const deleteBlog = async (id: number) => {
     try {
         const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };

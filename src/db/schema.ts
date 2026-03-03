@@ -81,6 +81,7 @@ export const blogs = sqliteTable("blogs", {
     readTime: text("read_time").notNull(),
     type: text("type").notNull(),
     imageUrl: text("image_url").notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
 // Relations

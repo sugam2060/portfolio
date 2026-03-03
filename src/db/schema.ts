@@ -73,6 +73,16 @@ export const featuredProjects = sqliteTable("featured_projects", {
     createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
+export const blogs = sqliteTable("blogs", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    readTime: text("read_time").notNull(),
+    type: text("type").notNull(),
+    imageUrl: text("image_url").notNull(),
+});
+
 // Relations
 export const projectsRelations = relations(projects, ({ many, one }) => ({
     keyFeatures: many(projectKeyFeatures),
@@ -127,4 +137,7 @@ export type NewProjectGallery = typeof projectGallery.$inferInsert;
 
 export type FeaturedProject = typeof featuredProjects.$inferSelect;
 export type NewFeaturedProject = typeof featuredProjects.$inferInsert;
+
+export type Blog = typeof blogs.$inferSelect;
+export type NewBlog = typeof blogs.$inferInsert;
 

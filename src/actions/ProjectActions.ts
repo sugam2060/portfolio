@@ -48,8 +48,18 @@ export const getProjects = async (page = 1, limit = 6, type?: string) => {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
         const offset = (page - 1) * limit;
-        const filterType = type && type !== "All" ? type : null;
-        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}_t${filterType || "all"}`;
+
+        // Fix: Properly handle type casing and sanitize cache key strings
+        const cleanType = type?.trim();
+        const isAll = !cleanType || cleanType.toLowerCase() === 'all';
+        let filterType: string | null = isAll ? null : cleanType!;
+
+        // Handle common frontend/db mismatch where UI requests "AI/ML" but db stored "AI"
+        if (filterType === 'AI/ML') filterType = 'AI';
+
+        // Slugify the type for safe KV cache key naming
+        const safeCacheType = filterType ? filterType.toLowerCase().replace(/[^a-z0-9]/g, '-') : "all";
+        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}_t_${safeCacheType}`;
 
         // 1. Try KV Cache
         const cached = await kv.get(cacheKey);
@@ -222,11 +232,11 @@ export const createProject = async (formData: FormData) => {
             });
         }
 
-        // 5. Invalidate All Project Caches
+        // 5. Invalidate All Project Caches (Parallelize for Performance)
         const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
-        for (const key of projectKeys.keys) {
-            await kv.delete(key.name);
-        }
+        const deletes = projectKeys.keys.map(key => kv.delete(key.name));
+        deletes.push(kv.delete(FEATURED_PROJECTS_CACHE_KEY));
+        await Promise.all(deletes);
 
         revalidatePath("/projects");
         revalidatePath("/admin/projects");
@@ -259,12 +269,12 @@ export const deleteProject = async (id: number) => {
         // 2. Database Deletion (Cascades to gallery and features)
         await db.delete(projects).where(eq(projects.id, id));
 
-        // 3. Clear All Project & Featured Caches
+        // 3. Clear All Project Caches (Parallelize for Performance)
         const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
-        for (const key of projectKeys.keys) {
-            await kv.delete(key.name);
-        }
-        await kv.delete(FEATURED_PROJECTS_CACHE_KEY);
+        const deletePromises = projectKeys.keys.map(key => kv.delete(key.name));
+        deletePromises.push(kv.delete(FEATURED_PROJECTS_CACHE_KEY));
+        deletePromises.push(kv.delete(`${PROJECT_DETAIL_CACHE_KEY}_${id}`)); // Invalidate individual cache too
+        await Promise.all(deletePromises);
 
         revalidatePath("/projects");
         revalidatePath("/admin/projects");
@@ -287,12 +297,12 @@ export const toggleFeaturedProject = async (projectId: number, isFeatured: boole
             await db.delete(featuredProjects).where(eq(featuredProjects.projectId, projectId));
         }
 
-        // Clear All Project & Featured Caches
+        // Clear All Project & Featured Caches (Parallelize for Performance)
         const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
-        for (const key of projectKeys.keys) {
-            await kv.delete(key.name);
-        }
-        await kv.delete(FEATURED_PROJECTS_CACHE_KEY);
+        const deletePromises = projectKeys.keys.map(key => kv.delete(key.name));
+        deletePromises.push(kv.delete(FEATURED_PROJECTS_CACHE_KEY));
+        deletePromises.push(kv.delete(`${PROJECT_DETAIL_CACHE_KEY}_${projectId}`));
+        await Promise.all(deletePromises);
 
         revalidatePath("/");
         revalidatePath("/admin/projects");

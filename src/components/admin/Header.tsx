@@ -25,9 +25,9 @@ export default function AdminHeader() {
 
     const handleLogout = async () => {
         try {
+            logout(); // Clear Zustand store first
+            toast.success("Logging out...");
             await logoutUser();
-            logout(); // Clear Zustand store
-            toast.success("Logged out successfully");
         } catch (error) {
             toast.error("Failed to logout");
         }
@@ -74,32 +74,34 @@ export default function AdminHeader() {
                     </Button>
                 </Link>
 
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Avatar className="cursor-pointer border border-border/50 hover:ring-2 hover:ring-primary/20 transition-all">
-                            <AvatarImage src="" />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                                {user?.fullname?.charAt(0).toUpperCase() || <User className="size-4" />}
-                            </AvatarFallback>
-                        </Avatar>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-2" align="end">
-                        <div className="px-2 py-1.5 mb-2">
-                            <p className="text-sm font-bold truncate">{user?.fullname}</p>
-                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                        </div>
-                        <div className="h-px bg-border/50 my-1" />
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            className="w-full justify-start gap-2 h-9"
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="size-4" />
-                            Log Out
-                        </Button>
-                    </PopoverContent>
-                </Popover>
+                {user && (
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Avatar className="cursor-pointer border border-border/50 hover:ring-2 hover:ring-primary/20 transition-all">
+                                <AvatarImage src="" />
+                                <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                                    {user.fullname?.charAt(0).toUpperCase() || <User className="size-4" />}
+                                </AvatarFallback>
+                            </Avatar>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56 p-2" align="end">
+                            <div className="px-2 py-1.5 mb-2">
+                                <p className="text-sm font-bold truncate">{user.fullname}</p>
+                                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                            </div>
+                            <div className="h-px bg-border/50 my-1" />
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                className="w-full justify-start gap-2 h-9"
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="size-4" />
+                                Log Out
+                            </Button>
+                        </PopoverContent>
+                    </Popover>
+                )}
             </div>
         </header>
     );

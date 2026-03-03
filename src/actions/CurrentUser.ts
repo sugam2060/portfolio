@@ -28,7 +28,7 @@ export const getCurrentUserAction = async () => {
         try {
             const { payload: decoded } = await jwtVerify(token, secret);
             payload = decoded;
-        } catch (err) {
+        } catch {
             return {
                 status: false,
                 message: "Session expired or invalid token"

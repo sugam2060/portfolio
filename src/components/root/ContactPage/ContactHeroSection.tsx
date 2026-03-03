@@ -45,7 +45,7 @@ export default function ContactHeroSection() {
             >
                 <h3 className="font-bold mb-2 text-foreground dark:text-white">Availability</h3>
                 <p className="text-sm text-muted-foreground dark:text-slate-400 leading-relaxed">
-                    I'm currently available for freelance work and full-time positions. Typical response time: <span className="text-primary font-medium">Within 24 hours</span>.
+                    I&apos;m currently available for freelance work and full-time positions. Typical response time: <span className="text-primary font-medium">Within 24 hours</span>.
                 </p>
             </motion.div>
 

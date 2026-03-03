@@ -11,10 +11,15 @@ import {
     FormLabel,
     FormMessage
 } from "@/components/ui/form";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { sendMessage } from "@/actions/MessageActions";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function ContactForm() {
+    const [isPending, setIsPending] = useState(false);
+
     const form = useForm<ContactFormValues>({
         resolver: zodResolver(ContactFormSchema),
         defaultValues: {
@@ -26,10 +31,26 @@ export default function ContactForm() {
     });
 
     const onSubmit = async (data: ContactFormValues) => {
-        // Implement email sending logic here
-        console.log("Form Submitted:", data);
-        alert("Thanks for your message! (Implement API here)");
-        form.reset();
+        setIsPending(true);
+        try {
+            const res = await sendMessage({
+                name: data.fullName,
+                email: data.email,
+                subject: data.subject,
+                message: data.message,
+            });
+
+            if (res.success) {
+                toast.success("Message sent successfully! I'll get back to you soon.");
+                form.reset();
+            } else {
+                toast.error(res.error || "Something went wrong. Please try again later.");
+            }
+        } catch (err) {
+            toast.error("Failed to connect to the server.");
+        } finally {
+            setIsPending(false);
+        }
     };
 
     const inputClasses = "w-full bg-slate-100 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary py-4 px-5 text-foreground dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all outline-none";
@@ -121,10 +142,20 @@ export default function ContactForm() {
 
                     <button
                         type="submit"
-                        className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-xl transition-all flex items-center justify-center gap-2 group shadow-xl shadow-primary/20"
+                        disabled={isPending}
+                        className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-xl transition-all flex items-center justify-center gap-2 group shadow-xl shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Send Message
-                        <Send className="size-5 transition-transform group-hover:translate-x-1" />
+                        {isPending ? (
+                            <>
+                                Sending...
+                                <Loader2 className="size-5 animate-spin" />
+                            </>
+                        ) : (
+                            <>
+                                Send Message
+                                <Send className="size-5 transition-transform group-hover:translate-x-1" />
+                            </>
+                        )}
                     </button>
                 </form>
             </Form>

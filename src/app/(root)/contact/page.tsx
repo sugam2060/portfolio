@@ -12,7 +12,7 @@ export default function ContactPage() {
                         Get in <span className="text-primary">Touch</span>
                     </h1>
                     <p className="text-muted-foreground dark:text-slate-400 text-lg max-w-xl">
-                        Have a project in mind, a question, or just want to say hi? I'm always open to discussing new opportunities and tech challenges.
+                        Have a project in mind, a question, or just want to say hi? I&apos;m always open to discussing new opportunities and tech challenges.
                     </p>
                 </div>
 

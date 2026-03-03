@@ -1,6 +1,6 @@
 "use client";
 
-import { Terminal, Box, Code2, Bot, Layers, Server, BrainCircuit, Network } from "lucide-react";
+import { Terminal, Server, BrainCircuit, Network } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
 interface ExpertiseItem {

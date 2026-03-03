@@ -23,7 +23,9 @@ export const getBlogs = async (page = 1, limit = 6, search = "") => {
 
         // 1. Check KV cache
         const cached = await kv.get(cacheKey, "json");
-        if (cached) return cached as any;
+        if (cached) return cached as { data: any[]; pagination: any }; // Refine typing if possible
+        // Actually, let's keep it as any for now but without the lint error if possible
+        // Or just define the type of response
 
         // 2. Fetch from DB
         const db = await getDb();
@@ -34,9 +36,9 @@ export const getBlogs = async (page = 1, limit = 6, search = "") => {
         if (search) {
             const searchPattern = `%${search.toLowerCase()}%`;
             const filterClause = sql`lower(${blogs.title}) LIKE ${searchPattern} OR lower(${blogs.description}) LIKE ${searchPattern} OR lower(${blogs.type}) LIKE ${searchPattern}`;
-            // @ts-ignore
+            // @ts-expect-error - filters on drizzle query objects can be complex to type correctly here
             query = query.where(filterClause);
-            // @ts-ignore
+            // @ts-expect-error - same as above
             countQuery = countQuery.where(filterClause);
         }
 
@@ -139,9 +141,9 @@ export const createBlog = async (formData: FormData) => {
         revalidatePath("/admin/blogs");
 
         return { success: "Blog published successfully!", id: newBlog.id };
-    } catch (error: any) {
+    } catch (error) {
         console.error("createBlog error:", error);
-        return { error: error.message || "Failed to create blog." };
+        return { error: error instanceof Error ? error.message : "Failed to create blog." };
     }
 };
 
@@ -212,9 +214,9 @@ export const updateBlog = async (id: number, formData: FormData) => {
         revalidatePath("/admin/blogs");
 
         return { success: "Article updated successfully!" };
-    } catch (error: any) {
+    } catch (error) {
         console.error("updateBlog error:", error);
-        return { error: error.message || "Failed to update blog." };
+        return { error: error instanceof Error ? error.message : "Failed to update blog." };
     }
 };
 

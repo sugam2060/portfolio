@@ -3,7 +3,7 @@
 import { getDb } from "@/db";
 import { projects, projectGallery, featuredProjects, projectKeyFeatures } from "@/db/schema";
 import { ProjectSchema } from "@/types/projects";
-import { eq, desc, asc, sql, and } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
@@ -122,7 +122,7 @@ export const getFeaturedProjects = async () => {
         const kv = env.portfolio_kv;
 
         const cached = await kv.get(FEATURED_PROJECTS_CACHE_KEY, "json");
-        if (cached) return cached as any;
+        if (cached) return cached as any[];
 
         const db = await getDb();
         const results = await db.query.featuredProjects.findMany({
@@ -229,9 +229,9 @@ export const createProject = async (formData: FormData) => {
         revalidatePath("/projects");
         revalidatePath("/admin/projects");
         return { success: "Project engineered successfully!", id: newProject.id };
-    } catch (error: any) {
+    } catch (error) {
         console.error("createProject error:", error);
-        return { error: error.message || "Construction failure." };
+        return { error: error instanceof Error ? error.message : "Construction failure." };
     }
 };
 

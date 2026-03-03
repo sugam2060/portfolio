@@ -24,7 +24,7 @@ export default async function Home() {
 				focusOn={homepageData?.about?.focusOn}
 			/>
 			<ExpertiseSection
-				expertiseList={homepageData?.expertise as any}
+				expertiseList={homepageData?.expertise}
 			/>
 		</>
 	);

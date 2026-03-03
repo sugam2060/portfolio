@@ -141,9 +141,9 @@ export const updateHeroSection = async (formData: FormData) => {
                         // We continue even if deletion fails to avoid blocking the update
                     }
                 }
-            } catch (uploadError: any) {
+            } catch (uploadError) {
                 console.error("updateHeroSection: R2 Upload Error Details:", uploadError);
-                return { error: `Image upload failed: ${uploadError.message || "Unknown R2 error"}` };
+                return { error: `Image upload failed: ${uploadError instanceof Error ? uploadError.message : "Unknown R2 error"}` };
             }
         }
 
@@ -167,7 +167,7 @@ export const updateHeroSection = async (formData: FormData) => {
             await db.insert(heroSection).values({
                 ...validation.data,
                 imageUrl: finalImageUrl,
-            } as any);
+            });
             console.log("updateHeroSection: Database updated (INSERT)");
         }
 
@@ -179,16 +179,16 @@ export const updateHeroSection = async (formData: FormData) => {
             success: "Hero section updated successfully!",
             imageUrl: finalImageUrl
         };
-    } catch (error: any) {
+    } catch (error) {
         console.error("updateHeroSection: FATAL ACTION ERROR:", error);
         return {
-            error: error.message || "An unexpected error occurred while updating the hero section.",
-            stack: process.env.NODE_ENV === "development" ? error.stack : undefined
+            error: error instanceof Error ? error.message : "An unexpected error occurred while updating the hero section.",
+            stack: process.env.NODE_ENV === "development" && error instanceof Error ? error.stack : undefined
         };
     }
 };
 
-export const updateAboutSection = async (data: any) => {
+export const updateAboutSection = async (data: { heading: string; subHeading: string; focusOn: string }) => {
     const validation = AboutSectionSchema.safeParse(data);
     if (!validation.success) return { error: validation.error.flatten().fieldErrors };
 
@@ -201,13 +201,14 @@ export const updateAboutSection = async (data: any) => {
                 .set({ ...validation.data, updatedAt: new Date() })
                 .where(eq(aboutSection.id, existing[0].id));
         } else {
-            await db.insert(aboutSection).values(validation.data as any);
+            await db.insert(aboutSection).values(validation.data);
         }
 
         revalidatePath("/");
         await invalidateHomepageCache();
         return { success: "About section updated successfully!" };
     } catch (error) {
+        console.error("updateAboutSection error:", error);
         return { error: "Failed to update about section." };
     }
 };
@@ -236,6 +237,7 @@ export const updateExpertise = async (data: { id?: number; heading: string; cont
         await invalidateHomepageCache();
         return { success: "Expertise updated successfully!" };
     } catch (error) {
+        console.error("updateExpertise error:", error);
         return { error: "Failed to update expertise." };
     }
 };
@@ -248,6 +250,7 @@ export const deleteExpertise = async (id: number) => {
         await invalidateHomepageCache();
         return { success: "Expertise deleted successfully!" };
     } catch (error) {
+        console.error("deleteExpertise error:", error);
         return { error: "Failed to delete expertise." };
     }
 };

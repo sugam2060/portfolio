@@ -28,8 +28,10 @@ const ExperienceFormSchema = z.object({
 
 type FormInput = z.infer<typeof ExperienceFormSchema>;
 
+import { Experience } from "@/db/schema";
+
 interface ExperienceFormProps {
-    initialData?: any;
+    initialData?: Experience;
     isEdit?: boolean;
 }
 
@@ -91,7 +93,7 @@ export default function ExperienceForm({ initialData, isEdit }: ExperienceFormPr
                 skills: filteredSkills,
             };
 
-            const res = isEdit
+            const res = isEdit && initialData
                 ? await updateExperience(initialData.id, submitData)
                 : await createExperience(submitData);
 

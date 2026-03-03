@@ -7,7 +7,7 @@ import { LuPlus, LuTrash2, LuPencil, LuBriefcase, LuMapPin, LuCalendar } from "r
 import { toast } from "sonner";
 import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
-import { useState } from "react";
+import { Experience } from "@/db/schema";
 
 export default function ExperienceList() {
     const queryClient = useQueryClient();
@@ -53,7 +53,7 @@ export default function ExperienceList() {
                         <p className="text-muted-foreground italic text-sm">No work history found. Add your first role!</p>
                     </div>
                 ) : (
-                    experiences.map((exp: any) => (
+                    experiences.map((exp: Experience) => (
                         <div key={exp.id} className="bg-surface-dark dark:bg-[#11141a] p-6 rounded-2xl border border-border/50 dark:border-[#282e39] group hover:border-primary/50 transition-all">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">

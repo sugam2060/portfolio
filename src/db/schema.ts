@@ -97,6 +97,16 @@ export const experiences = sqliteTable("experiences", {
     updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
+export const messages = sqliteTable("messages", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    subject: text("subject").notNull(),
+    message: text("message").notNull(),
+    isRead: integer("is_read", { mode: "boolean" }).default(false),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+});
+
 // Relations
 export const projectsRelations = relations(projects, ({ many, one }) => ({
     keyFeatures: many(projectKeyFeatures),
@@ -157,4 +167,7 @@ export type NewBlog = typeof blogs.$inferInsert;
 
 export type Experience = typeof experiences.$inferSelect;
 export type NewExperience = typeof experiences.$inferInsert;
+
+export type Message = typeof messages.$inferSelect;
+export type NewMessage = typeof messages.$inferInsert;
 

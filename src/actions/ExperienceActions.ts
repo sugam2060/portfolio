@@ -1,7 +1,8 @@
 "use server";
 
 import { getDb } from "@/db";
-import { experiences } from "@/db/schema";
+import { experiences, Experience } from "@/db/schema";
+import { ExperienceInput } from "@/types/experience";
 import { eq, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
@@ -15,7 +16,7 @@ export const getExperiences = async () => {
 
         // 1. Check KV cache
         const cached = await kv.get(EXPERIENCE_CACHE_KEY, "json");
-        if (cached) return cached as any;
+        if (cached) return cached as Experience[];
 
         // 2. Fetch from DB
         const db = await getDb();
@@ -41,7 +42,7 @@ export const getExperienceById = async (id: number) => {
     }
 };
 
-export const createExperience = async (data: any) => {
+export const createExperience = async (data: ExperienceInput) => {
     try {
         const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
@@ -63,13 +64,13 @@ export const createExperience = async (data: any) => {
         revalidatePath("/admin/experience");
 
         return { success: true, data: newExp[0] };
-    } catch (error: any) {
+    } catch (error) {
         console.error("createExperience error:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: error instanceof Error ? error.message : "Failed to create experience" };
     }
 };
 
-export const updateExperience = async (id: number, data: any) => {
+export const updateExperience = async (id: number, data: ExperienceInput) => {
     try {
         const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
@@ -92,9 +93,9 @@ export const updateExperience = async (id: number, data: any) => {
         revalidatePath("/admin/experience");
 
         return { success: true };
-    } catch (error: any) {
+    } catch (error) {
         console.error("updateExperience error:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: error instanceof Error ? error.message : "Failed to update experience" };
     }
 };
 
@@ -112,8 +113,8 @@ export const deleteExperience = async (id: number) => {
         revalidatePath("/admin/experience");
 
         return { success: true };
-    } catch (error: any) {
+    } catch (error) {
         console.error("deleteExperience error:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: error instanceof Error ? error.message : "Failed to delete experience" };
     }
 };

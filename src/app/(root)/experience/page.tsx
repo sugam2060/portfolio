@@ -2,6 +2,8 @@ import EmptyState from "@/components/root/ExperiencePage/EmptyState";
 import NonEmptyState from "@/components/root/ExperiencePage/NonEmptyState";
 import { getExperiences } from "@/actions/ExperienceActions";
 
+import { Experience } from "@/db/schema";
+
 export default async function ExperiencePage() {
     const experiences = await getExperiences();
 
@@ -21,7 +23,7 @@ export default async function ExperiencePage() {
             {/* Experience Content Layout */}
             {experiences && experiences.length > 0 ? (
                 <div className="space-y-8 mt-12">
-                    {experiences.map((exp: any) => (
+                    {experiences.map((exp: Experience) => (
                         <NonEmptyState key={exp.id} data={exp} />
                     ))}
                 </div>

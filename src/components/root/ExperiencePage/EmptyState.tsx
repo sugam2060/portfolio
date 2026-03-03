@@ -64,7 +64,7 @@ export default function EmptyState() {
                 </h2>
 
                 <p className="text-muted-foreground dark:text-[#9ca6ba] text-lg font-normal leading-relaxed">
-                    In the meantime, I'm busy building AI applications, contributing to open source, and expanding my skill set.
+                    In the meantime, I&apos;m busy building AI applications, contributing to open source, and expanding my skill set.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto">

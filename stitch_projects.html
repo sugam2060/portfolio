@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Projects Showcase - Sugam Pudasaini</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                        "surface-dark": "#1b212d",
+                        "border-dark": "#282e39",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex flex-col">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark bg-background-dark/95 backdrop-blur-sm px-6 py-4 lg:px-20">
+<div class="flex items-center gap-4 text-slate-100">
+<div class="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
+<span class="material-symbols-outlined" style="font-size: 24px;">code</span>
+</div>
+<h2 class="text-slate-100 text-xl font-bold leading-tight tracking-[-0.015em]">Sugam Pudasaini</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-9">
+<a class="text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Home</a>
+<a class="text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">About</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">Projects</a>
+<a class="text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Blog</a>
+<a class="text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Contact</a>
+</div>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary hover:bg-blue-600 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Resume</span>
+</button>
+</div>
+<div class="md:hidden text-slate-100">
+<span class="material-symbols-outlined">menu</span>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-10 px-4 md:px-10 lg:px-20">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<div class="flex flex-col items-center text-center pb-10 pt-6">
+<h1 class="text-slate-100 tracking-tight text-4xl md:text-5xl font-bold leading-tight mb-4">
+                            Awesome Projects
+                        </h1>
+<p class="text-slate-400 max-w-2xl text-lg">
+                            Exploring the intersection of AI, robust backends, and intuitive frontends. Here are some things I've built.
+                        </p>
+</div>
+<div class="flex gap-3 pb-8 flex-wrap justify-center">
+<button class="group flex h-9 items-center justify-center gap-x-2 rounded-full bg-primary text-white px-5 transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">auto_awesome</span>
+<p class="text-sm font-medium leading-normal">All</p>
+</button>
+<button class="group flex h-9 items-center justify-center gap-x-2 rounded-full bg-surface-dark border border-border-dark text-slate-300 px-5 hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">smart_toy</span>
+<p class="text-sm font-medium leading-normal">AI/ML</p>
+</button>
+<button class="group flex h-9 items-center justify-center gap-x-2 rounded-full bg-surface-dark border border-border-dark text-slate-300 px-5 hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">dns</span>
+<p class="text-sm font-medium leading-normal">Backend</p>
+</button>
+<button class="group flex h-9 items-center justify-center gap-x-2 rounded-full bg-surface-dark border border-border-dark text-slate-300 px-5 hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined" style="font-size: 20px;">language</span>
+<p class="text-sm font-medium leading-normal">Web Dev</p>
+</button>
+</div>
+<div class="mb-8 w-full">
+<div class="group relative overflow-hidden rounded-xl bg-surface-dark border border-border-dark shadow-sm transition-all hover:border-primary/50 hover:shadow-md hover:shadow-primary/5">
+<div class="grid md:grid-cols-2 gap-0">
+<div class="h-64 md:h-auto bg-cover bg-center" data-alt="Abstract AI neural network visualization with blue nodes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOEC6q5lznEczwYQL3wLZp8EeBW317t4-fZTI-sD9V6LSXkSPDHYcwLzCrMRc25kuxz6lOVCOg2XMY4cVSbFBJUHDIinNtdy9F8xGlUHFs_qwA0IUEjRdLn-TEXPt6ixwlV9qW3oDgdWA21xM2Nggl8w3j1V7FaG84VbyeYdrLLkxhhoNFSliHqf-4F0qme6WGgtj-liejXZOI9Lsj_WLkSyTZtd10TC2-IlbM74w-AvFD1KpvGbRtY_0LSUJxZcR6l3_Xuc_8s1EV");'></div>
+<div class="flex flex-col justify-center p-6 md:p-8 lg:p-10">
+<div class="flex items-center gap-2 mb-3">
+<span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider">Featured</span>
+<span class="text-slate-400 text-sm flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span> 2023
+                                        </span>
+</div>
+<h3 class="text-slate-100 text-2xl font-bold mb-3 group-hover:text-primary transition-colors">AI Chatbot Assistant</h3>
+<p class="text-slate-400 text-base leading-relaxed mb-6">
+                                        A sophisticated conversational agent built with LangChain and OpenAI to assist with customer queries efficiently. It features memory retention, context awareness, and seamless integration with existing support tickets.
+                                    </p>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-medium border border-border-dark">Python</span>
+<span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-medium border border-border-dark">LangChain</span>
+<span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-medium border border-border-dark">React</span>
+<span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-medium border border-border-dark">PostgreSQL</span>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center justify-center rounded-lg h-10 px-6 bg-primary hover:bg-blue-600 text-white text-sm font-bold transition-colors">
+                                            View Case Study
+                                        </button>
+<button class="flex items-center justify-center rounded-lg h-10 px-6 bg-transparent border border-border-dark hover:border-primary text-slate-300 hover:text-primary text-sm font-bold transition-colors">
+<span class="material-symbols-outlined mr-2" style="font-size: 18px;">code</span> Source Code
+                                        </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="group flex flex-col rounded-xl bg-surface-dark border border-border-dark overflow-hidden transition-all hover:border-primary/50 hover:-translate-y-1 duration-300">
+<div class="relative h-48 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="E-commerce payment processing dashboard interface" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBsUIpoUYBpyAwQZ5BsM-divell4sUGVK80O58swURaBRD91GY1ab7GXso_PzV67V1UB4FsCjbWGiUUJ8w6WI8NDVesxNC7QrEaUB4cgHy5dyH7jBDV3IhZtNSIGJ7E19ovbEKnVkdo_3tgxMGVL8YP7NsWhRKLXtCPVD7MAtG8c10g5Iux4mMB326oEpYcG95--YjVIyCjm8831ifBWoHKsXcQwgbRYDGbQwi08nbtsJ6M9GLgherTauYzAPjRCunfy1mDH53T2kJE");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-60"></div>
+</div>
+<div class="flex flex-col flex-1 p-5">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-slate-100 text-lg font-bold group-hover:text-primary transition-colors">E-commerce Microservices</h4>
+<span class="material-symbols-outlined text-slate-500 group-hover:text-primary transition-colors" style="font-size: 20px;">open_in_new</span>
+</div>
+<p class="text-slate-400 text-sm mb-4 flex-1 line-clamp-3">
+                                    Scalable backend architecture using Node.js microservices. Handles high-concurrency order processing and inventory management with Redis caching.
+                                </p>
+<div class="flex flex-wrap gap-2 mt-auto">
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">Node.js</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">Docker</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">Kafka</span>
+</div>
+</div>
+</div>
+<div class="group flex flex-col rounded-xl bg-surface-dark border border-border-dark overflow-hidden transition-all hover:border-primary/50 hover:-translate-y-1 duration-300">
+<div class="relative h-48 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Real-time data analytics chart on dark background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDD0un3DZZZxVnD8ZbXy_q3Q9xKFARAmW_gyUSzS3FkQyMV2vguewoZgVe9uF4GCh9g0v_cHk9RnVckkv2ebHAJTY9_4EOsYDf7daY3iib2x1HQQcVREFZRk3fXpHw39kTsp8kO0cI3Nug8L7C2KixiYPN1rOO4AXnd6XPvhX13A-RdzUCOR6l1L_zGMuIeV8woEWDPHAatT3kRascQiP6i_J8cxowK92H18pLDFl4_BJrN-F_B1vcYTG-hWJOuU0o4gEige26akpE4");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-60"></div>
+</div>
+<div class="flex flex-col flex-1 p-5">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-slate-100 text-lg font-bold group-hover:text-primary transition-colors">Real-time Analytics</h4>
+<span class="material-symbols-outlined text-slate-500 group-hover:text-primary transition-colors" style="font-size: 20px;">open_in_new</span>
+</div>
+<p class="text-slate-400 text-sm mb-4 flex-1 line-clamp-3">
+                                    A dashboard visualizing live data streams. Built with WebSocket for real-time updates and D3.js for interactive data visualization.
+                                </p>
+<div class="flex flex-wrap gap-2 mt-auto">
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">React</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">D3.js</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">WebSockets</span>
+</div>
+</div>
+</div>
+<div class="group flex flex-col rounded-xl bg-surface-dark border border-border-dark overflow-hidden transition-all hover:border-primary/50 hover:-translate-y-1 duration-300">
+<div class="relative h-48 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Code editor screen focusing on security algorithms" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDylSv8BEWFRjeeeRVhKRHlsfa7r3JymiWkiveBmP2SKBJvrERO5o7keiphVLVONwpEBFJjy3Py_mnicDxBPo4vkxdiYRl_t4P2Y6y6sxHxNdNcYO0_lGiZmoL9po576OB5S1zG7-XmIiSKUQmwsfnbEU8asuXo_rwMmp45QaPOrVJE-q6KEUTjMyVa_94tOv5nu2cYbKrvilJIyyN3Hoy0degdz6BdlcJdvN0KG4F32Ah8d1-ITaBms0UKP-XdxtrbG1XgSeEWoMf3");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-60"></div>
+</div>
+<div class="flex flex-col flex-1 p-5">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-slate-100 text-lg font-bold group-hover:text-primary transition-colors">Auth Service API</h4>
+<span class="material-symbols-outlined text-slate-500 group-hover:text-primary transition-colors" style="font-size: 20px;">open_in_new</span>
+</div>
+<p class="text-slate-400 text-sm mb-4 flex-1 line-clamp-3">
+                                    Secure authentication and authorization service supporting OAuth2, JWT, and multi-factor authentication for enterprise applications.
+                                </p>
+<div class="flex flex-wrap gap-2 mt-auto">
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">Go</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">gRPC</span>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">OAuth2</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center my-12">
+<button class="group flex items-center justify-center gap-2 rounded-lg px-8 py-3 bg-transparent border border-border-dark hover:border-primary text-slate-300 hover:text-primary transition-all font-bold">
+                            View All Archive
+                            <span class="material-symbols-outlined transition-transform group-hover:translate-x-1" style="font-size: 20px;">arrow_forward</span>
+</button>
+</div><!-- Pagination -->
+<div class="mt-4 mb-12 flex justify-center items-center gap-2">
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark border border-border-dark text-slate-400 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold shadow-lg shadow-primary/25">1</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark border border-border-dark text-slate-400 hover:bg-primary hover:text-white transition-all font-bold">2</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark border border-border-dark text-slate-400 hover:bg-primary hover:text-white transition-all font-bold">3</button>
+<span class="px-2 text-slate-500">...</span>
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark border border-border-dark text-slate-400 hover:bg-primary hover:text-white transition-all font-bold">12</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark border border-border-dark text-slate-400 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<footer class="border-t border-border-dark bg-background-dark py-12">
+<div class="container mx-auto px-6 md:px-20">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10">
+<div class="flex flex-col items-center md:items-start text-center md:text-left">
+<h3 class="text-slate-100 text-xl font-bold mb-2">Sugam Pudasaini</h3>
+<p class="text-slate-500 text-sm max-w-xs">AI Engineer &amp; Software Developer focused on building robust and scalable systems.</p>
+</div>
+<div class="flex items-center gap-4">
+<a aria-label="LinkedIn" class="group flex items-center justify-center w-10 h-10 rounded-full bg-surface-dark border border-border-dark text-slate-400 hover:text-white hover:border-primary hover:bg-primary/10 transition-all duration-300" href="#">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
+</a>
+<a aria-label="GitHub" class="group flex items-center justify-center w-10 h-10 rounded-full bg-surface-dark border border-border-dark text-slate-400 hover:text-white hover:border-primary hover:bg-primary/10 transition-all duration-300" href="#">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+</a>
+<a aria-label="X" class="group flex items-center justify-center w-10 h-10 rounded-full bg-surface-dark border border-border-dark text-slate-400 hover:text-white hover:border-primary hover:bg-primary/10 transition-all duration-300" href="#">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a>
+<a aria-label="Email" class="group flex items-center justify-center w-10 h-10 rounded-full bg-surface-dark border border-border-dark text-slate-400 hover:text-white hover:border-primary hover:bg-primary/10 transition-all duration-300" href="mailto:hello@example.com">
+<span class="material-symbols-outlined" style="font-size: 20px;">mail</span>
+</a>
+</div>
+</div>
+<div class="border-t border-border-dark mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-slate-500 text-sm">© 2024 Sugam Pudasaini. All rights reserved.</p>
+<p class="text-slate-600 text-xs">Designed &amp; Built with passion.</p>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

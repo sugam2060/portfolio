@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact - Sugam Pudasaini</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Navigation Bar -->
+<header class="border-b border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<svg class="w-8 h-8" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.1739 20.1739L27.8261 5.82609C29.1366 7.13663 28.3989 10.1876 26.2002 13.7654C24.8538 15.9564 22.9595 18.3449 20.6522 20.6522C18.3449 22.9595 15.9564 24.8538 13.7654 26.2002C10.1876 28.3989 7.13663 29.1366 5.82609 27.8261L20.1739 42.1739C21.4845 43.4845 24.5355 42.7467 28.1133 40.548C30.3042 39.2016 32.6927 37.3073 35 35C37.3073 32.6927 39.2016 30.3042 40.548 28.1133C42.7467 24.5355 43.4845 21.4845 42.1739 20.1739Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight">Sugam Pudasaini</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Projects</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">About</a>
+<a class="text-primary text-sm font-medium" href="#">Contact</a>
+<button class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-primary/20">
+                    Resume
+                </button>
+</nav>
+<button class="md:hidden text-slate-100">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center py-16 px-6">
+<div class="max-w-4xl w-full">
+<!-- Header Section -->
+<div class="mb-12 text-center md:text-left">
+<h1 class="text-5xl md:text-6xl font-black mb-4 tracking-tighter">Get in <span class="text-primary">Touch</span></h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg max-w-xl">
+                    Have a project in mind, a question, or just want to say hi? I'm always open to discussing new opportunities and tech challenges.
+                </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Contact Info -->
+<div class="lg:col-span-4 flex flex-col gap-8">
+<div class="flex items-start gap-4">
+<div class="bg-primary/10 p-3 rounded-xl text-primary">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Email me at</p>
+<p class="font-medium">hello@sugam.dev</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="bg-primary/10 p-3 rounded-xl text-primary">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Location</p>
+<p class="font-medium">Kathmandu, Nepal</p>
+</div>
+</div>
+<div class="mt-4 p-6 rounded-2xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+<h3 class="font-bold mb-2">Availability</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                            I'm currently available for freelance work and full-time positions. Typical response time: <span class="text-primary font-medium">Within 24 hours</span>.
+                        </p>
+</div>
+</div>
+<!-- Contact Form -->
+<div class="lg:col-span-8">
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold px-1">Full Name</label>
+<input class="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary py-4 px-5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all" placeholder="John Doe" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold px-1">Email Address</label>
+<input class="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary py-4 px-5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all" placeholder="john@example.com" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold px-1">Subject</label>
+<input class="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary py-4 px-5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all" placeholder="How can I help you?" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold px-1">Message</label>
+<textarea class="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-primary py-4 px-5 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 transition-all resize-none" placeholder="Tell me about your project details..." rows="6"></textarea>
+</div>
+<button class="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-xl transition-all flex items-center justify-center gap-2 group shadow-xl shadow-primary/20" type="submit">
+                            Send Message
+                            <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">send</span>
+</button>
+</form>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Section -->
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-12 px-6 bg-slate-50 dark:bg-slate-900/30">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="text-primary/50">
+<svg class="w-6 h-6" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.1739 20.1739L27.8261 5.82609C29.1366 7.13663 28.3989 10.1876 26.2002 13.7654C24.8538 15.9564 22.9595 18.3449 20.6522 20.6522C18.3449 22.9595 15.9564 24.8538 13.7654 26.2002C10.1876 28.3989 7.13663 29.1366 5.82609 27.8261L20.1739 42.1739C21.4845 43.4845 24.5355 42.7467 28.1133 40.548C30.3042 39.2016 32.6927 37.3073 35 35C37.3073 32.6927 39.2016 30.3042 40.548 28.1133C42.7467 24.5355 43.4845 21.4845 42.1739 20.1739Z" fill="currentColor"></path>
+</svg>
+</div>
+<p class="text-sm font-medium text-slate-500">© 2024 Sugam Pudasaini. All rights reserved.</p>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="sr-only">Twitter</span>
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"></path></svg>
+</a>
+<a class="text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="sr-only">GitHub</span>
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+</a>
+<a class="text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="sr-only">LinkedIn</span>
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
+</a>
+</div>
+</div>
+</footer>
+</body></html>

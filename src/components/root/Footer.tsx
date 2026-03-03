@@ -51,7 +51,7 @@ export default function Footer() {
                 <div className="w-full h-px bg-border/50 dark:bg-[#282e39] my-4"></div>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground dark:text-[#9ca6ba]">
                     <p>© {currentYear} Sugam Pudasaini. All rights reserved.</p>
-                    <Link href="/login" className="hover:text-primary transition-colors opacity-50 hover:opacity-100">
+                    <Link href="/admin" className="hover:text-primary transition-colors opacity-50 hover:opacity-100">
                         <RiAdminLine className="size-4" />
                     </Link>
                 </div>

@@ -75,7 +75,7 @@ const invalidateHomepageCache = async () => {
 
 // --- SETTERS / UPDATERS ---
 
-import { uploadFileToR2 } from "./utils/r2_client";
+import { uploadFileToR2, deleteFileFromR2 } from "./utils/r2_client";
 
 export const updateHeroSection = async (formData: FormData) => {
     console.log("updateHeroSection: Starting action");
@@ -87,13 +87,15 @@ export const updateHeroSection = async (formData: FormData) => {
         }
 
         const { env } = context as unknown as { env: CloudflareEnv };
-        console.log("updateHeroSection: Env keys:", Object.keys(env || {}));
-
         const db = await getDb();
         if (!db) {
             console.error("updateHeroSection: Database connection failed!");
             return { error: "Database connection failed." };
         }
+
+        // 1. Fetch existing data to check for the old image URL
+        const existing = await db.select().from(heroSection).limit(1);
+        const oldImageUrl = existing[0]?.imageUrl;
 
         // Safely extract data from FormData to avoid null values causing Zod to fail
         const data = {
@@ -104,8 +106,6 @@ export const updateHeroSection = async (formData: FormData) => {
             imageUrl: (formData.get("imageUrl") as string) || "",
         };
 
-        console.log("updateHeroSection: Validating data", { ...data, imageUrl: data.imageUrl ? "present" : "missing" });
-
         const validation = HeroSectionSchema.safeParse(data);
         if (!validation.success) {
             console.warn("updateHeroSection: Validation failed", validation.error.flatten().fieldErrors);
@@ -115,7 +115,7 @@ export const updateHeroSection = async (formData: FormData) => {
         const file = formData.get("file") as File;
         let finalImageUrl = data.imageUrl || "";
 
-        // If a new file is uploaded, process it
+        // 2. If a new file is uploaded, process it
         if (file && typeof file !== "string" && file.size > 0) {
             console.log(`updateHeroSection: Processing file upload: ${file.name} (${file.size} bytes)`);
             try {
@@ -125,10 +125,22 @@ export const updateHeroSection = async (formData: FormData) => {
                     return { error: "Cloudflare configuration error: R2 bucket binding missing." };
                 }
 
+                // Upload new image
                 const filename = await uploadFileToR2(file);
                 const publicUrl = env.R2_PUBLIC_URL || "";
                 finalImageUrl = publicUrl ? `${publicUrl}/${filename}` : filename;
                 console.log(`updateHeroSection: File uploaded successfully: ${finalImageUrl}`);
+
+                // Delete old image if it exists and is different from the new one
+                if (oldImageUrl && oldImageUrl !== finalImageUrl) {
+                    console.log(`updateHeroSection: Deleting old image: ${oldImageUrl}`);
+                    try {
+                        await deleteFileFromR2(oldImageUrl);
+                    } catch (deleteError) {
+                        console.error("updateHeroSection: Failed to delete old image from R2:", deleteError);
+                        // We continue even if deletion fails to avoid blocking the update
+                    }
+                }
             } catch (uploadError: any) {
                 console.error("updateHeroSection: R2 Upload Error Details:", uploadError);
                 return { error: `Image upload failed: ${uploadError.message || "Unknown R2 error"}` };
@@ -140,9 +152,8 @@ export const updateHeroSection = async (formData: FormData) => {
             return { error: "Hero image is required (either existing URL or new upload)." };
         }
 
+        // 3. Update database
         console.log("updateHeroSection: Updating database...");
-        const existing = await db.select().from(heroSection).limit(1);
-
         if (existing.length > 0) {
             await db.update(heroSection)
                 .set({
@@ -151,15 +162,16 @@ export const updateHeroSection = async (formData: FormData) => {
                     updatedAt: new Date()
                 })
                 .where(eq(heroSection.id, existing[0].id));
-            console.log("updateHeroSection: Database updated successfully (UPDATE)");
+            console.log("updateHeroSection: Database updated (UPDATE)");
         } else {
             await db.insert(heroSection).values({
                 ...validation.data,
                 imageUrl: finalImageUrl,
             } as any);
-            console.log("updateHeroSection: Database updated successfully (INSERT)");
+            console.log("updateHeroSection: Database updated (INSERT)");
         }
 
+        // 4. Invalidate cache and Next.js path
         revalidatePath("/");
         await invalidateHomepageCache();
 
@@ -169,7 +181,6 @@ export const updateHeroSection = async (formData: FormData) => {
         };
     } catch (error: any) {
         console.error("updateHeroSection: FATAL ACTION ERROR:", error);
-        // Include stack trace in dev if possible, but safely
         return {
             error: error.message || "An unexpected error occurred while updating the hero section.",
             stack: process.env.NODE_ENV === "development" ? error.stack : undefined

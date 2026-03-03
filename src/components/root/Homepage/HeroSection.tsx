@@ -5,14 +5,28 @@ import { ArrowRight, TerminalSquare } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+    heading?: string;
+    subHeading?: string;
+    imgTextHeading?: string;
+    imgTextSubHeading?: string;
+    imageUrl?: string;
+}
+
+export default function HeroSection({
+    heading = "I build intelligent AI and web applications",
+    subHeading = "Hi, I'm Sugam. An AI & Software Engineer turning complex problems into scalable solutions through modern frameworks and agentic systems.",
+    imgTextHeading = "System Architecture",
+    imgTextSubHeading = "Building scalable agentic workflows",
+    imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuBCSm8IgDDK9Ab7plJ4vjHPQX9APwWBTMMTyLc45zZESWiwLE1ukPHDOiw44xdsXZ3m2WzklM_SSCx87cZxgv-DFd7EafsoogVNp5MjCMuVDTYwVZoG2XkiZNB5HBWBQxn3O0SIGc-srieKLWYr7S3RcU_aic8F0bImCIe4imLvlCrFywmUDZG-8UemQmD8HyseSmG6wvZkddZaZRA3YQ8vIXS2LFY0aKeJmcbHuaZfrdABVSNvdqQfQQ05UKNahbVcgKnCxUkgDydk"
+}: HeroSectionProps) {
     return (
         <section id="home" className="w-full relative px-6 md:px-10 lg:px-40 flex flex-1 justify-center py-5">
             <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
                 <div className="@container">
                     <div className="flex flex-col gap-6 py-10 @[480px]:gap-8 @[864px]:flex-row-reverse items-center justify-between">
 
-                        {/* Right Column: Visual Graphic (Made smaller for user request) */}
+                        {/* Right Column: Visual Graphic */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, x: 20 }}
                             animate={{ opacity: 1, scale: 1, x: 0, y: [0, -10, 0] }}
@@ -22,16 +36,16 @@ export default function HeroSection() {
                                 x: { duration: 0.7, ease: "easeOut", delay: 0.2 },
                                 y: { duration: 5, ease: "easeInOut", repeat: Infinity, delay: 0.9 }
                             }}
-                            className="w-full max-w-md bg-center bg-no-repeat aspect-square bg-cover rounded-2xl @[480px]:h-auto @[480px]:min-w-[320px] @[864px]:w-[45%] shadow-2xl shadow-primary/20 relative overflow-hidden group ml-auto"
-                            style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBCSm8IgDDK9Ab7plJ4vjHPQX9APwWBTMMTyLc45zZESWiwLE1ukPHDOiw44xdsXZ3m2WzklM_SSCx87cZxgv-DFd7EafsoogVNp5MjCMuVDTYwVZoG2XkiZNB5HBWBQxn3O0SIGc-srieKLWYr7S3RcU_aic8F0bImCIe4imLvlCrFywmUDZG-8UemQmD8HyseSmG6wvZkddZaZRA3YQ8vIXS2LFY0aKeJmcbHuaZfrdABVSNvdqQfQQ05UKNahbVcgKnCxUkgDydk")' }}
+                            className="w-full max-w-md bg-center bg-no-repeat aspect-square bg-cover rounded-2xl @[480px]:h-auto @[480px]:min-w-[320px] @[864px]:w-[45%] shadow-2xl shadow-primary/20 relative overflow-hidden group ml-auto border border-border/10"
+                            style={{ backgroundImage: `url("${imageUrl}")` }}
                         >
                             <div className="absolute inset-0 bg-gradient-to-t from-background/80 dark:from-[#111318]/80 to-transparent"></div>
                             <div className="absolute bottom-4 left-4 right-4 md:right-auto md:w-[90%] p-4 bg-background/90 dark:bg-[#1b1f27]/90 backdrop-blur rounded-xl border border-border/50 dark:border-[#282e39]">
                                 <div className="flex items-center gap-2 text-primary font-bold">
                                     <TerminalSquare className="size-4" />
-                                    <span className="text-xs uppercase tracking-wider">System Architecture</span>
+                                    <span className="text-xs uppercase tracking-wider">{imgTextHeading}</span>
                                 </div>
-                                <p className="text-foreground text-sm mt-1">Building scalable agentic workflows</p>
+                                <p className="text-foreground text-sm mt-1">{imgTextSubHeading}</p>
                             </div>
                         </motion.div>
 
@@ -51,10 +65,10 @@ export default function HeroSection() {
                                     <span className="text-xs font-medium text-muted-foreground dark:text-[#9ca6ba] uppercase tracking-wide">Available for work</span>
                                 </div>
                                 <h1 className="text-foreground dark:text-white text-4xl font-black leading-[1.1] tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black">
-                                    I build intelligent <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-300">AI</span> and web applications
+                                    {heading}
                                 </h1>
                                 <h2 className="text-muted-foreground dark:text-[#9ca6ba] text-lg font-normal leading-relaxed">
-                                    Hi, I'm <strong className="text-foreground dark:text-white">Sugam</strong>. An AI & Software Engineer turning complex problems into scalable solutions through modern frameworks and agentic systems.
+                                    {subHeading}
                                 </h2>
                             </div>
 

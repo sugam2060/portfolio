@@ -3,8 +3,18 @@
 import { Terminal, Box, Code2, Bot, Layers, Server, BrainCircuit, Network } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
-export default function ExpertiseSection() {
-    const expertiseAreas = [
+interface ExpertiseItem {
+    id: number;
+    heading: string;
+    content: string[];
+}
+
+interface ExpertiseSectionProps {
+    expertiseList?: ExpertiseItem[];
+}
+
+export default function ExpertiseSection({ expertiseList = [] }: ExpertiseSectionProps) {
+    const defaultExpertise = [
         {
             title: "Core Engineering",
             icon: <Server className="size-8 text-cyan-400" />,
@@ -27,6 +37,36 @@ export default function ExpertiseSection() {
             skills: ["LangChain", "LangGraph", "LlamaIndex", "AutoGen", "RAG"],
         },
     ];
+
+    // Helper to get visual theme based on index
+    const getVisualTheme = (index: number) => {
+        const themes = [
+            {
+                icon: <Server className="size-8 text-cyan-400" />,
+                topGradient: "bg-gradient-to-r from-blue-500 to-cyan-400",
+                hoverGlow: "hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] hover:border-cyan-400/50",
+            },
+            {
+                icon: <BrainCircuit className="size-8 text-primary" />,
+                topGradient: "bg-gradient-to-r from-primary to-purple-500",
+                hoverGlow: "hover:shadow-[0_0_30px_rgba(13,89,242,0.3)] hover:border-primary/50",
+            },
+            {
+                icon: <Network className="size-8 text-pink-500" />,
+                topGradient: "bg-gradient-to-r from-purple-500 to-pink-500",
+                hoverGlow: "hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:border-pink-500/50",
+            }
+        ];
+        return themes[index % themes.length];
+    };
+
+    const displayExpertise = expertiseList.length > 0
+        ? expertiseList.map((item, idx) => ({
+            title: item.heading,
+            skills: item.content,
+            ...getVisualTheme(idx)
+        }))
+        : defaultExpertise;
 
     // Animation variants for cards container
     const containerVariants: Variants = {
@@ -69,7 +109,7 @@ export default function ExpertiseSection() {
                     viewport={{ once: true, margin: "-50px" }}
                     className="grid grid-cols-1 md:grid-cols-3 gap-6"
                 >
-                    {expertiseAreas.map((area, index) => (
+                    {displayExpertise.map((area, index) => (
                         <motion.div
                             key={index}
                             variants={cardVariants}

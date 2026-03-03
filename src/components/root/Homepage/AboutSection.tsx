@@ -5,7 +5,17 @@ import Link from "next/link";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { motion, Variants } from "framer-motion";
 
-export default function AboutSection() {
+interface AboutSectionProps {
+    heading?: string;
+    subHeading?: string;
+    focusOn?: string;
+}
+
+export default function AboutSection({
+    heading = "From Nepal to Global Tech",
+    subHeading = "I am a passionate developer originally from Nepal, currently honing my craft at KIIT University. My journey is defined by a relentless curiosity for AI agents, automation, and full-stack engineering. I don't just write code; I design systems that think.",
+    focusOn = "AI Agents, Automation & Scalable Systems"
+}: AboutSectionProps) {
     // Animation variants for staggered bento cards
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -50,10 +60,10 @@ export default function AboutSection() {
                         className="flex flex-col gap-6"
                     >
                         <h3 className="text-foreground dark:text-white tracking-tight text-3xl font-bold leading-tight">
-                            From Nepal to Global Tech
+                            {heading}
                         </h3>
                         <p className="text-muted-foreground dark:text-[#9ca6ba] text-lg leading-relaxed">
-                            I am a passionate developer originally from Nepal, currently honing my craft at <span className="text-foreground dark:text-white font-medium">KIIT University</span>. My journey is defined by a relentless curiosity for AI agents, automation, and full-stack engineering. I don't just write code; I design systems that think.
+                            {subHeading}
                         </p>
 
                         {/* Social Links */}
@@ -107,7 +117,7 @@ export default function AboutSection() {
                             </div>
                             <div className="flex flex-col">
                                 <h2 className="text-foreground dark:text-white text-base font-bold leading-tight">Focus</h2>
-                                <p className="text-muted-foreground dark:text-[#9ca6ba] text-sm mt-1">AI Agents, Automation & Scalable Systems</p>
+                                <p className="text-muted-foreground dark:text-[#9ca6ba] text-sm mt-1">{focusOn}</p>
                             </div>
                         </motion.div>
                     </motion.div>

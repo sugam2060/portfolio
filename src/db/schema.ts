@@ -39,6 +39,32 @@ export const expertise = sqliteTable("expertise", {
     updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
+export const projects = sqliteTable("projects", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    title: text("title").notNull(),
+    overview: text("overview").notNull(),
+    keyFeatureTitle: text("key_feature_title").notNull(),
+    keyFeatureSubject: text("key_feature_subject").notNull(),
+    techStack: text("tech_stack").notNull(), // JSON list of strings
+    type: text("type").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+});
+
+export const projectGallery = sqliteTable("project_gallery", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    projectId: integer("project_id").references(() => projects.id, { onDelete: 'cascade' }),
+    photoUrl: text("photo_url").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+});
+
+export const featuredProjects = sqliteTable("featured_projects", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    projectId: integer("project_id").notNull().unique().references(() => projects.id, { onDelete: 'cascade' }),
+    displayOrder: integer("display_order").default(0),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
@@ -50,4 +76,13 @@ export type NewAboutSection = typeof aboutSection.$inferInsert;
 
 export type Expertise = typeof expertise.$inferSelect;
 export type NewExpertise = typeof expertise.$inferInsert;
+
+export type Project = typeof projects.$inferSelect;
+export type NewProject = typeof projects.$inferInsert;
+
+export type ProjectGallery = typeof projectGallery.$inferSelect;
+export type NewProjectGallery = typeof projectGallery.$inferInsert;
+
+export type FeaturedProject = typeof featuredProjects.$inferSelect;
+export type NewFeaturedProject = typeof featuredProjects.$inferInsert;
 

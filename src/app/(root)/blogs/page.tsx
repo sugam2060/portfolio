@@ -1,5 +1,7 @@
 import Searchbar from "@/components/root/BlogPage/Searchbar";
 import BlogGrid from "@/components/root/BlogPage/BlogGrid";
+import { Suspense } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function BlogPage() {
     return (
@@ -19,7 +21,14 @@ export default function BlogPage() {
             <Searchbar />
 
             {/* Blog Grid */}
-            <BlogGrid />
+            <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-20">
+                    <Spinner className="size-12 text-primary" />
+                    <p className="mt-4 text-muted-foreground animate-pulse font-black uppercase tracking-widest text-xs">Loading context...</p>
+                </div>
+            }>
+                <BlogGrid />
+            </Suspense>
 
         </main>
     );

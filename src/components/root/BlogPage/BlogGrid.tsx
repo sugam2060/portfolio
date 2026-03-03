@@ -70,6 +70,7 @@ export default function BlogGrid() {
                         description={blog.description}
                         type={blog.type}
                         readTime={blog.readTime}
+                        date={blog.createdAt}
                         imageUrl={blog.imageUrl}
                     />
                 ))}

@@ -1,9 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, LogOut } from "lucide-react";
+import { Bot, LogOut, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useUserStore } from "@/store/userStore";
+import { logoutUser } from "@/actions/LogoutUser";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
     { name: "Home", href: "/admin" },
@@ -15,6 +21,17 @@ const NAV_LINKS = [
 
 export default function AdminHeader() {
     const pathname = usePathname();
+    const { user, logout } = useUserStore();
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            logout(); // Clear Zustand store
+            toast.success("Logged out successfully");
+        } catch (error) {
+            toast.error("Failed to logout");
+        }
+    };
 
     return (
         <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-border/50 dark:border-[#282e39] bg-background/80 dark:bg-[#111318]/80 backdrop-blur-md px-6 py-4 md:px-10 lg:px-40">
@@ -51,14 +68,38 @@ export default function AdminHeader() {
             </nav>
 
             <div className="flex items-center gap-4">
-                <Link href="/">
-                    <button className="hidden md:flex h-9 items-center justify-center rounded-lg px-4 border border-border hover:bg-muted transition-colors text-xs font-bold uppercase tracking-wider">
+                <Link href="/" target="_blank">
+                    <Button variant="outline" size="sm" className="hidden md:flex h-9 items-center justify-center px-4 transition-colors text-xs font-bold uppercase tracking-wider">
                         View Site
-                    </button>
+                    </Button>
                 </Link>
-                <button className="flex size-9 items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors">
-                    <LogOut className="size-4" />
-                </button>
+
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Avatar className="cursor-pointer border border-border/50 hover:ring-2 hover:ring-primary/20 transition-all">
+                            <AvatarImage src="" />
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                                {user?.fullname?.charAt(0).toUpperCase() || <User className="size-4" />}
+                            </AvatarFallback>
+                        </Avatar>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56 p-2" align="end">
+                        <div className="px-2 py-1.5 mb-2">
+                            <p className="text-sm font-bold truncate">{user?.fullname}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        </div>
+                        <div className="h-px bg-border/50 my-1" />
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            className="w-full justify-start gap-2 h-9"
+                            onClick={handleLogout}
+                        >
+                            <LogOut className="size-4" />
+                            Log Out
+                        </Button>
+                    </PopoverContent>
+                </Popover>
             </div>
         </header>
     );

@@ -3,9 +3,9 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 /**
- * Proxy to protect admin routes
+ * Middleware to protect admin routes
  */
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const isLoginPage = pathname === "/login";
     const isAdminPath = pathname.startsWith("/admin");
@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
 }
 
 /**
- * Configure which routes the proxy should run on
+ * Configure which routes the middleware should run on
  */
 export const config = {
     matcher: [
@@ -63,4 +63,3 @@ export const config = {
         "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };
-

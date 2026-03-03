@@ -1,13 +1,17 @@
-export const runtime = "edge";
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-export async function proxy(request: NextRequest) {
+/**
+ * Middleware to protect admin routes
+ */
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+    const isLoginPage = pathname === "/login";
+    const isAdminPath = pathname.startsWith("/admin");
+
+    // Get the access_token cookie
     const token = request.cookies.get("access_token")?.value;
-    const isLoginPage = request.nextUrl.pathname === "/login";
-    const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
 
     let isValid = false;
 
@@ -16,22 +20,26 @@ export async function proxy(request: NextRequest) {
             const secret = new TextEncoder().encode(
                 process.env.JWT_SECRET || "fallback_secret_change_me"
             );
-            await jwtVerify(token, secret);
-            isValid = true;
+            // Verify the JWT signature at the edge
+            const { payload } = await jwtVerify(token, secret);
+
+            // Basic check for required fields in our payload
+            if (payload && payload.id && payload.email) {
+                isValid = true;
+            }
         } catch (error) {
             isValid = false;
         }
     }
 
-    // Protect admin routes
+    // Protect admin routes: Redirect to login if not authenticated
     if (isAdminPath && !isValid) {
         const loginUrl = new URL("/login", request.url);
-        // Optional: add a redirect param so you can come back after login
-        // loginUrl.searchParams.set("from", request.nextUrl.pathname);
+        loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
-    // Prevent logged-in users from seeing the login page again
+    // Redirect logged-in users away from the login page
     if (isLoginPage && isValid) {
         return NextResponse.redirect(new URL("/admin", request.url));
     }
@@ -39,16 +47,20 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
+/**
+ * Configure which routes the middleware should run on
+ */
 export const config = {
     matcher: [
         /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
+         * Match all request paths except:
+         * - api routes
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
+         * - static assets
          */
-        "/((?!api|_next/static|_next/image|favicon.ico).*)",
+        "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };
+

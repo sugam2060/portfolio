@@ -9,9 +9,39 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 // --- CACHE KEYS ---
 const PROJECTS_CACHE_KEY = "projects_all";
+const PROJECT_DETAIL_CACHE_KEY = "project_detail";
 const FEATURED_PROJECTS_CACHE_KEY = "projects_featured";
 
 // --- FETCHING ---
+
+export const getProjectById = async (id: number) => {
+    try {
+        const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
+        const kv = env.portfolio_kv;
+        const cacheKey = `${PROJECT_DETAIL_CACHE_KEY}_${id}`;
+
+        const cached = await kv.get(cacheKey);
+        if (cached) return JSON.parse(cached);
+
+        const db = await getDb();
+        const result = await db.query.projects.findFirst({
+            where: eq(projects.id, id),
+            with: {
+                gallery: true,
+                keyFeatures: true,
+            },
+        });
+
+        if (result) {
+            await kv.put(cacheKey, JSON.stringify(result), { expirationTtl: 86400 });
+        }
+
+        return result;
+    } catch (error) {
+        console.error("getProjectById error:", error);
+        return null;
+    }
+};
 
 export const getProjects = async (page = 1, limit = 6, type?: string) => {
     try {

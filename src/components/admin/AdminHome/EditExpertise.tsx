@@ -56,23 +56,34 @@ export default function EditExpertise({ initialData = [] }: { initialData?: any[
         },
     });
 
+    const [skillsText, setSkillsText] = useState("");
+
     const onSubmit = (data: ExpertiseInput) => {
         handleUpdate({ ...data, id: editingId || undefined } as any);
+        setSkillsText("");
     };
 
     const startEditing = (item: any) => {
         setEditingId(item.id);
+        const joined = item.content.join(", ");
+        setSkillsText(joined);
         form.reset({
             heading: item.heading,
             content: item.content,
         });
     };
 
+    const handleSkillsChange = (val: string, onChange: (val: string[]) => void) => {
+        setSkillsText(val);
+        const skillsArray = val.split(",").map(s => s.trim()).filter(Boolean);
+        onChange(skillsArray);
+    };
+
     return (
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-xl">
             <CardHeader>
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <LuTerminal className="text-primary" />
+                    <LuTerminal className="text-primary animate-pulse" />
                     Technical Expertise
                 </CardTitle>
                 <CardDescription>
@@ -83,37 +94,37 @@ export default function EditExpertise({ initialData = [] }: { initialData?: any[
                 {/* Expertise List */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {initialData.map((item) => (
-                        <div key={item.id} className="p-4 rounded-xl border border-border/50 bg-background/50 group relative">
-                            <h4 className="font-bold text-foreground mb-2">{item.heading}</h4>
-                            <div className="flex flex-wrap gap-1">
+                        <div key={item.id} className="p-5 rounded-xl border border-border/50 bg-background/50 group relative hover:border-primary/30 transition-all duration-300 shadow-md hover:shadow-lg">
+                            <h4 className="font-bold text-foreground mb-3">{item.heading}</h4>
+                            <div className="flex flex-wrap gap-1.5">
                                 {item.content.map((skill: string, i: number) => (
-                                    <span key={i} className="text-[10px] bg-muted px-2 py-0.5 rounded uppercase font-bold tracking-tighter opacity-70">
+                                    <span key={i} className="text-[10px] bg-muted px-2 py-0.5 rounded-md uppercase font-bold tracking-tighter opacity-70 group-hover:opacity-100 transition-opacity">
                                         {skill}
                                     </span>
                                 ))}
                             </div>
-                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEditing(item)}>
-                                    <LuPlus className="h-3 w-3 rotate-45" />
+                            <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
+                                <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={() => startEditing(item)}>
+                                    <LuPlus className="h-4 w-4 rotate-45" />
                                 </Button>
-                                <Button size="icon" variant="ghost" className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={() => handleDelete(item.id)}>
-                                    <LuTrash2 className="h-3 w-3" />
+                                <Button size="icon" variant="destructive" className="h-8 w-8 rounded-full" onClick={() => handleDelete(item.id)}>
+                                    <LuTrash2 className="h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
                     ))}
                     {initialData.length === 0 && (
-                        <div className="col-span-full py-8 text-center border-2 border-dashed border-border/50 rounded-xl text-muted-foreground text-sm italic">
-                            No expertise blocks added yet.
+                        <div className="col-span-full py-12 text-center border-2 border-dashed border-border/50 rounded-2xl text-muted-foreground text-sm italic bg-muted/20">
+                            No expertise blocks added yet. Click below to start building your stack.
                         </div>
                     )}
                 </div>
 
                 {/* Add/Edit Form */}
-                <Card className="border-primary/20 bg-primary/5">
+                <Card className="border-primary/20 bg-primary/5 shadow-inner">
                     <CardHeader className="py-4">
-                        <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary">
-                            {editingId ? "Edit Expertise Block" : "Add New Expertise Block"}
+                        <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+                            {editingId ? "Edit Block" : "Add New Block"}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -126,7 +137,7 @@ export default function EditExpertise({ initialData = [] }: { initialData?: any[
                                         <FormItem>
                                             <FormLabel>Category Name</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Core Engineering" {...field} />
+                                                <Input placeholder="Core Engineering" {...field} className="bg-background/50 border-primary/10 transition-colors focus:border-primary" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -142,8 +153,9 @@ export default function EditExpertise({ initialData = [] }: { initialData?: any[
                                             <FormControl>
                                                 <Input
                                                     placeholder="Python, TypeScript, Docker..."
-                                                    value={field.value.join(", ")}
-                                                    onChange={(e) => field.onChange(e.target.value.split(",").map(s => s.trim()).filter(Boolean))}
+                                                    value={skillsText}
+                                                    onChange={(e) => handleSkillsChange(e.target.value, field.onChange)}
+                                                    className="bg-background/50 border-primary/10 transition-colors focus:border-primary"
                                                 />
                                             </FormControl>
                                             <FormDescription>Enter skills separated by commas.</FormDescription>
@@ -153,12 +165,12 @@ export default function EditExpertise({ initialData = [] }: { initialData?: any[
                                 />
 
                                 <div className="flex gap-2">
-                                    <Button type="submit" disabled={isUpdating} variant="default" className="flex-1">
+                                    <Button type="submit" disabled={isUpdating} variant="default" className="flex-1 shadow-md hover:shadow-lg transition-all rounded-lg">
                                         {isUpdating ? <Spinner className="h-4 w-4 mr-2" /> : <LuSave className="h-4 w-4 mr-2" />}
                                         {editingId ? "Save Changes" : "Add Expertise"}
                                     </Button>
                                     {editingId && (
-                                        <Button type="button" variant="outline" onClick={() => { setEditingId(null); form.reset(); }}>
+                                        <Button type="button" variant="outline" className="rounded-lg" onClick={() => { setEditingId(null); setSkillsText(""); form.reset(); }}>
                                             Cancel
                                         </Button>
                                     )}

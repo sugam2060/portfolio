@@ -1,6 +1,6 @@
 "use server";
 
-import { uploadFileToR2, deleteFileFromR2 } from "@/actions/utils/r2_client";
+import { uploadFileToR2 } from "@/actions/utils/r2_client";
 
 export const uploadFile = async (formData: FormData) => {
     try {

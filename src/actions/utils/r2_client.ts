@@ -1,10 +1,9 @@
-import { randomUUID } from "crypto";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export const uploadFileToR2 = async (file: File): Promise<string> => {
     const { env } = getCloudflareContext();
     const r2Bucket = (env as CloudflareEnv)["portfolio-r2"];
-    const filename = `${randomUUID()}-${file.name}`;
+    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
     const arrayBuffer = await file.arrayBuffer();
 
     await r2Bucket.put(filename, arrayBuffer, {

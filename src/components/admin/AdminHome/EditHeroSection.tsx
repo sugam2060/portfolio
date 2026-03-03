@@ -43,7 +43,7 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
         mutationFn: updateHeroSection,
         onSuccess: (data: any) => {
             if (data.error) {
-                toast.error("Error: " + JSON.stringify(data.error));
+                toast.error("Error updating hero section");
             } else {
                 toast.success("Hero section updated!");
                 queryClient.invalidateQueries({ queryKey: ["homepage-data"] });
@@ -51,24 +51,28 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
         },
     });
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setIsUploading(true);
+    const onSubmit = (data: HeroSectionInput) => {
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("heading", data.heading);
+        formData.append("subHeading", data.subHeading);
+        formData.append("imgTextHeading", data.imgTextHeading);
+        formData.append("imgTextSubHeading", data.imgTextSubHeading);
+        formData.append("imageUrl", data.imageUrl || "");
 
-        const result = await uploadFile(formData);
-        if (result.error) {
-            toast.error(result.error);
-        } else if (result.filename) {
-            // Note: You'll need to append your R2 public URL prefix here
-            // For now, setting the raw filename
-            form.setValue("imageUrl", result.filename);
-            toast.success("Image uploaded!");
+        const file = fileInputRef.current?.files?.[0];
+        if (file) {
+            formData.append("file", file);
         }
-        setIsUploading(false);
+
+        mutate(formData);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Preview or simple state update if needed
+            toast.info(`Selected: ${file.name}`);
+        }
     };
 
     return (
@@ -84,7 +88,7 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit((data) => mutate(data))} className="space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="grid md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -158,7 +162,7 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
                                             ref={fileInputRef}
                                             className="hidden"
                                             accept="image/*"
-                                            onChange={handleFileUpload}
+                                            onChange={handleFileChange}
                                         />
                                         <Button
                                             type="button"

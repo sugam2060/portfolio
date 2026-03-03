@@ -59,15 +59,21 @@ export const getCurrentUserAction = async () => {
         const [user] = await db.select().from(users).where(eq(users.id, payload.id)).limit(1);
 
         if (user) {
-            // Per user request: return false if found in db (indicating not in KV but in DB)
+            const userData = {
+                id: user.id,
+                fullname: user.fullname,
+                email: user.email
+            };
+
+            // Cache in KV for next time
+            await kv.put(`user_${payload.id}`, JSON.stringify(userData), {
+                expirationTtl: 86400
+            });
+
             return {
-                status: false,
-                message: "User found in database",
-                user: {
-                    id: user.id,
-                    fullname: user.fullname,
-                    email: user.email
-                }
+                status: true,
+                message: "User found in database and cached",
+                user: userData
             };
         }
 

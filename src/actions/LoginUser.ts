@@ -65,14 +65,21 @@ export const loginUser = async (data: LoginInput) => {
             path: "/",
         });
 
+        // Cache user info in KV
+        const userData = {
+            id: user.id,
+            fullname: user.fullname,
+            email: user.email,
+        };
+        const kv = env.portfolio_kv;
+        await kv.put(`user_${user.id}`, JSON.stringify(userData), {
+            expirationTtl: 86400 // 24 hours
+        });
+
         // Return success
         return {
             success: "Logged in successfully!",
-            user: {
-                id: user.id,
-                fullname: user.fullname,
-                email: user.email,
-            },
+            user: userData,
         };
     } catch (error: any) {
         console.error("Login failed:", error);

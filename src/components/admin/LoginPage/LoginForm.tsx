@@ -45,7 +45,7 @@ export default function LoginForm() {
                     setUser(data.user);
                 }
                 toast.success("Welcome back! Redirecting to dashboard...");
-                setTimeout(() => router.push("/"), 1500);
+                setTimeout(() => router.push("/admin"), 1500);
             }
         },
         onError: () => {

@@ -45,6 +45,9 @@ export default function ProjectCard({
                                 src={imageUrl}
                                 alt={title}
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                quality={80}
+                                loading="lazy"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                         ) : (

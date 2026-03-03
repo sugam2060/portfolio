@@ -20,9 +20,11 @@ export const getProjectById = async (id: number) => {
         const kv = env.portfolio_kv;
         const cacheKey = `${PROJECT_DETAIL_CACHE_KEY}_${id}`;
 
-        const cached = await kv.get(cacheKey);
-        if (cached) return JSON.parse(cached);
+        // 1. First check the KV cache
+        const cached = await kv.get(cacheKey, "json");
+        if (cached) return cached as any;
 
+        // 2. If not found, search against DB
         const db = await getDb();
         const result = await db.query.projects.findFirst({
             where: eq(projects.id, id),
@@ -32,6 +34,7 @@ export const getProjectById = async (id: number) => {
             },
         });
 
+        // 3. Store it in KV and return to client
         if (result) {
             await kv.put(cacheKey, JSON.stringify(result), { expirationTtl: 86400 });
         }
@@ -47,18 +50,18 @@ export const getProjects = async (page = 1, limit = 6) => {
     try {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
-        const offset = (page - 1) * limit;
 
+        // Properly paginated calculations
+        const offset = (page - 1) * limit;
         const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}`;
 
-        // 1. Try KV Cache
-        const cached = await kv.get(cacheKey);
-        if (cached) return JSON.parse(cached);
+        // 1. First check the KV cache
+        const cached = await kv.get(cacheKey, "json");
+        if (cached) return cached as any;
 
-        // 2. Fetch from DB
+        // 2. If not found, search against DB
         const db = await getDb();
 
-        // Parallel fetch for data and total count
         const [results, totalCount] = await Promise.all([
             db.query.projects.findMany({
                 columns: {
@@ -87,7 +90,6 @@ export const getProjects = async (page = 1, limit = 6) => {
                 .from(projects)
         ]);
 
-        // Truncate overview if needed and add featured status
         const truncatedResults = results.map(p => ({
             ...p,
             isFeatured: !!p.featuredProject,
@@ -104,7 +106,7 @@ export const getProjects = async (page = 1, limit = 6) => {
             }
         };
 
-        // 3. Cache it (24 hours since we manually invalidate on mutations)
+        // 3. Store it in KV and return to client
         await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 86400 });
 
         return response;
@@ -119,8 +121,8 @@ export const getFeaturedProjects = async () => {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
 
-        const cached = await kv.get(FEATURED_PROJECTS_CACHE_KEY);
-        if (cached) return JSON.parse(cached);
+        const cached = await kv.get(FEATURED_PROJECTS_CACHE_KEY, "json");
+        if (cached) return cached as any;
 
         const db = await getDb();
         const results = await db.query.featuredProjects.findMany({
@@ -240,34 +242,39 @@ export const deleteProject = async (id: number) => {
         const kv = env.portfolio_kv;
         const bucket = env["portfolio-r2"];
 
-        // 1. Clean up R2 storage
+        // 1. Delete complete respected images structure in R2
         try {
             const prefix = `projects/${id}/`;
             const objects = await bucket.list({ prefix });
-            for (const obj of objects.objects) {
-                await bucket.delete(obj.key);
+            if (objects && objects.objects.length > 0) {
+                for (const obj of objects.objects) {
+                    await bucket.delete(obj.key);
+                }
             }
         } catch (r2Error) {
-            console.error("R2 cleanup error:", r2Error);
-            // Continue with DB deletion even if R2 fails
+            console.error("R2 cleanup error, proceeding with cache/DB clear anyway:", r2Error);
         }
 
         // 2. Database Deletion (Cascades to gallery and features)
         await db.delete(projects).where(eq(projects.id, id));
 
-        // 3. Clear All Project Caches (Parallelize for Performance)
+        // 3. Update the cache also
         const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
         const deletePromises = projectKeys.keys.map(key => kv.delete(key.name));
         deletePromises.push(kv.delete(FEATURED_PROJECTS_CACHE_KEY));
-        deletePromises.push(kv.delete(`${PROJECT_DETAIL_CACHE_KEY}_${id}`)); // Invalidate individual cache too
+        deletePromises.push(kv.delete(`${PROJECT_DETAIL_CACHE_KEY}_${id}`));
+
+        // Batch execute all purges
         await Promise.all(deletePromises);
 
+        // Ask Next.js router cache to refetch for freshness on UI
         revalidatePath("/projects");
         revalidatePath("/admin/projects");
-        return { success: "Project archived and storage cleared." };
+
+        return { success: "Project and associated media correctly purged." };
     } catch (error) {
         console.error("deleteProject error:", error);
-        return { error: "Deconstruction failed." };
+        return { error: "Failed to purge project." };
     }
 };
 
@@ -283,18 +290,19 @@ export const toggleFeaturedProject = async (projectId: number, isFeatured: boole
             await db.delete(featuredProjects).where(eq(featuredProjects.projectId, projectId));
         }
 
-        // Clear All Project & Featured Caches (Parallelize for Performance)
+        // Clear All Project & Featured Caches (Update the cache also per user instruction)
         const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
         const deletePromises = projectKeys.keys.map(key => kv.delete(key.name));
         deletePromises.push(kv.delete(FEATURED_PROJECTS_CACHE_KEY));
         deletePromises.push(kv.delete(`${PROJECT_DETAIL_CACHE_KEY}_${projectId}`));
+
         await Promise.all(deletePromises);
 
         revalidatePath("/");
         revalidatePath("/admin/projects");
-        return { success: "Showcase priority updated." };
+        return { success: "Featured cache and status updated." };
     } catch (error) {
         console.error("toggleFeaturedProject error:", error);
-        return { error: "Featured update failed." };
+        return { error: "Failed to update featured." };
     }
 };

@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export default function ProjectList() {
     const queryClient = useQueryClient();
@@ -57,8 +58,19 @@ export default function ProjectList() {
                             className="group flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-xl border border-border/50 bg-background/50 hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md gap-4"
                         >
                             <div className="flex items-center gap-4 flex-1">
-                                <div className="size-12 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 flex-shrink-0">
-                                    <LuLayers className="size-6" />
+                                <div className="relative size-12 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 flex-shrink-0 overflow-hidden">
+                                    {project.gallery?.[0]?.photoUrl ? (
+                                        <Image
+                                            src={project.gallery[0].photoUrl}
+                                            alt={project.title}
+                                            fill
+                                            sizes="48px"
+                                            quality={60}
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <LuLayers className="size-6 z-10" />
+                                    )}
                                 </div>
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2">

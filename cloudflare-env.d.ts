@@ -6,7 +6,7 @@ declare namespace Cloudflare {
         ASSETS: Fetcher;
         NEXTJS_ENV: string;
         portfolio_db: D1Database;
-        portfolio_r2: R2Bucket;
+        "portfolio-r2": R2Bucket;
         portfolio_kv: KVNamespace;
     }
 }

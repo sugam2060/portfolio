@@ -34,7 +34,7 @@
 	"r2_buckets": [
 		{
 			"bucket_name": "portfolio-r2",
-			"binding": "portfolio_r2",
+			"binding": "portfolio-r2",
 			"remote": true
 		}
 	],

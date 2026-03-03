@@ -11,7 +11,7 @@ export const logoutUser = async () => {
         const tokenToken = cookieStore.get("access_token")?.value;
 
         if (tokenToken) {
-            const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
+            const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
             const secret = new TextEncoder().encode(
                 env.JWT_SECRET || "fallback_secret_change_me"
             );

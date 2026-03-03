@@ -22,7 +22,7 @@ export const loginUser = async (data: LoginInput) => {
 
     try {
         const db = await getDb();
-        const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
+        const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
 
         // Find user
         const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);

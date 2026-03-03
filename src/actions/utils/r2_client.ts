@@ -1,7 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export const uploadFileToR2 = async (file: File): Promise<string> => {
-    const { env } = getCloudflareContext();
+    const { env } = await getCloudflareContext({ async: true });
     const r2Bucket = (env as CloudflareEnv)["portfolio-r2"];
     const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
     const arrayBuffer = await file.arrayBuffer();
@@ -18,7 +18,7 @@ export const uploadFileToR2 = async (file: File): Promise<string> => {
 }
 
 export const deleteFileFromR2 = async (imageUrl: string) => {
-    const { env } = getCloudflareContext();
+    const { env } = await getCloudflareContext({ async: true });
     const r2Bucket = (env as CloudflareEnv)["portfolio-r2"];
 
     // Extract the key from the URL
@@ -31,7 +31,7 @@ export const deleteFileFromR2 = async (imageUrl: string) => {
 }
 
 export const updateFileInR2 = async (file: File, oldImageUrl: string) => {
-    const { env } = getCloudflareContext();
+    const { env } = await getCloudflareContext({ async: true });
     const r2Bucket = (env as CloudflareEnv)["portfolio-r2"];
 
     // Extract the key from the old URL to keep the same filename

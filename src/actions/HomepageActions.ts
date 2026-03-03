@@ -18,7 +18,7 @@ const HOMEPAGE_CACHE_KEY = "homepage_data";
 
 export const getHomepageData = async () => {
     try {
-        const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
+        const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
 
         // 1. Check KV Cache
@@ -66,7 +66,7 @@ export const getHomepageData = async () => {
 // Helper to invalidate cache
 const invalidateHomepageCache = async () => {
     try {
-        const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
+        const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
         await env.portfolio_kv.delete(HOMEPAGE_CACHE_KEY);
     } catch (e) {
         console.error("Failed to invalidate KV cache:", e);
@@ -80,7 +80,7 @@ import { uploadFileToR2, deleteFileFromR2 } from "./utils/r2_client";
 export const updateHeroSection = async (formData: FormData) => {
     console.log("updateHeroSection: Starting action");
     try {
-        const context = getCloudflareContext();
+        const context = await getCloudflareContext({ async: true });
         if (!context) {
             console.error("updateHeroSection: Cloudflare context is missing!");
             return { error: "Execution environment error: Cloudflare context missing." };

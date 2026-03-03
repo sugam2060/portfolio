@@ -39,7 +39,7 @@ export default function ExperienceList() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold uppercase tracking-tight text-foreground dark:text-white">Professional History</h2>
-                <Link href="/admin/admin/experience/new">
+                <Link href="/admin/experience/new">
                     <Button className="font-black uppercase tracking-widest text-[10px] gap-2">
                         <LuPlus className="size-3" />
                         Add Experience
@@ -78,7 +78,7 @@ export default function ExperienceList() {
                                 </div>
 
                                 <div className="flex gap-2">
-                                    <Link href={`/admin/admin/experience/${exp.id}`}>
+                                    <Link href={`/admin/experience/${exp.id}`}>
                                         <Button variant="ghost" size="icon" className="size-8 hover:bg-primary/10 hover:text-primary">
                                             <LuPencil className="size-3.5" />
                                         </Button>

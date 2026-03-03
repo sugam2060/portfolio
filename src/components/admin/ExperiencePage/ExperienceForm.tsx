@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Internal schema for the form using objects for array fields
 const ExperienceFormSchema = z.object({
@@ -19,8 +20,9 @@ const ExperienceFormSchema = z.object({
     role: z.string().min(2, "Role is required"),
     duration: z.string().min(2, "Duration is required"),
     location: z.string().min(2, "Location is required"),
-    description: z.array(z.object({ value: z.string().min(1, "Cannot be empty") })).min(1, "At least one point is required"),
-    skills: z.array(z.object({ value: z.string().min(1, "Cannot be empty") })).min(1, "At least one skill is required"),
+    // Allow empty values in the array during editing, but we'll filter them out on submit
+    description: z.array(z.object({ value: z.string() })).min(1, "At least one point is required"),
+    skills: z.array(z.object({ value: z.string() })).min(1, "At least one skill is required"),
     order: z.number(),
 });
 
@@ -33,6 +35,7 @@ interface ExperienceFormProps {
 
 export default function ExperienceForm({ initialData, isEdit }: ExperienceFormProps) {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [isPending, setIsPending] = useState(false);
 
     const form = useForm<FormInput>({
@@ -50,7 +53,7 @@ export default function ExperienceForm({ initialData, isEdit }: ExperienceFormPr
             role: "",
             duration: "",
             location: "",
-            description: [{ value: "" }, { value: "" }, { value: "" }],
+            description: [{ value: "" }],
             skills: [{ value: "" }],
             order: 0,
         },
@@ -67,13 +70,25 @@ export default function ExperienceForm({ initialData, isEdit }: ExperienceFormPr
     });
 
     const onSubmit: SubmitHandler<FormInput> = async (data) => {
+        // Filter out empty entries
+        const filteredDesc = data.description.map(d => d.value.trim()).filter(v => v !== "");
+        const filteredSkills = data.skills.map(s => s.value.trim()).filter(v => v !== "");
+
+        if (filteredDesc.length === 0) {
+            toast.error("Please provide at least one responsibility point.");
+            return;
+        }
+        if (filteredSkills.length === 0) {
+            toast.error("Please provide at least one skill.");
+            return;
+        }
+
         setIsPending(true);
         try {
-            // Map back to primitive arrays for the server action
             const submitData = {
                 ...data,
-                description: data.description.map(d => d.value),
-                skills: data.skills.map(s => s.value),
+                description: filteredDesc,
+                skills: filteredSkills,
             };
 
             const res = isEdit
@@ -82,12 +97,14 @@ export default function ExperienceForm({ initialData, isEdit }: ExperienceFormPr
 
             if (res.success) {
                 toast.success(isEdit ? "Experience updated" : "Experience added");
+                queryClient.invalidateQueries({ queryKey: ["admin-experience"] });
                 router.push("/admin/experience");
                 router.refresh();
             } else {
                 toast.error(res.error || "Something went wrong");
             }
         } catch (err) {
+            console.error(err);
             toast.error("An unexpected error occurred.");
         } finally {
             setIsPending(false);

@@ -35,6 +35,29 @@
 	"observability": {
 		"enabled": true
 	}
+	// "d1_databases": [
+	// 	{
+	// 		"binding": "rms_db",
+	// 		"database_name": "rms_db",
+	// 		"database_id": "a89b8140-0ca6-4456-8875-f3e41a033f38",
+	// 		"migrations_dir": "drizzle",
+	// 		"remote": true
+	// 	}
+	// ],
+	// "r2_buckets": [
+	// 	{
+	// 		"bucket_name": "safari-ma-tapari",
+	// 		"binding": "y",
+	// 		"remote": true
+	// 	}
+	// ],
+	// "kv_namespaces": [
+	// 	{
+	// 		"binding": "KV_safari",
+	// 		"id": "d81eaa54acbc4100a1f2cf6c5479de52",
+	// 		"remote": true
+	// 	}
+	// ],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

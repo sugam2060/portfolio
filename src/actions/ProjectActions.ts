@@ -50,6 +50,7 @@ export const getProjects = async (page = 1, limit = 6, type?: string) => {
                         },
                         limit: 1,
                     },
+                    featuredProject: true,
                 },
                 orderBy: [desc(projects.createdAt)],
                 limit: limit,
@@ -60,9 +61,10 @@ export const getProjects = async (page = 1, limit = 6, type?: string) => {
                 .where(whereClause)
         ]);
 
-        // Truncate overview if needed
+        // Truncate overview if needed and add featured status
         const truncatedResults = results.map(p => ({
             ...p,
+            isFeatured: !!p.featuredProject,
             overview: p.overview.length > 150 ? p.overview.substring(0, 150) + "..." : p.overview
         }));
 
@@ -76,8 +78,8 @@ export const getProjects = async (page = 1, limit = 6, type?: string) => {
             }
         };
 
-        // 3. Cache it (shorter for filtered results)
-        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 3600 });
+        // 3. Cache it (24 hours since we manually invalidate on mutations)
+        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 86400 });
 
         return response;
     } catch (error) {
@@ -210,10 +212,24 @@ export const deleteProject = async (id: number) => {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const db = await getDb();
         const kv = env.portfolio_kv;
+        const bucket = env["portfolio-r2"];
 
+        // 1. Clean up R2 storage
+        try {
+            const prefix = `projects/${id}/`;
+            const objects = await bucket.list({ prefix });
+            for (const obj of objects.objects) {
+                await bucket.delete(obj.key);
+            }
+        } catch (r2Error) {
+            console.error("R2 cleanup error:", r2Error);
+            // Continue with DB deletion even if R2 fails
+        }
+
+        // 2. Database Deletion (Cascades to gallery and features)
         await db.delete(projects).where(eq(projects.id, id));
 
-        // Clear All Project & Featured Caches
+        // 3. Clear All Project & Featured Caches
         const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
         for (const key of projectKeys.keys) {
             await kv.delete(key.name);
@@ -222,7 +238,7 @@ export const deleteProject = async (id: number) => {
 
         revalidatePath("/projects");
         revalidatePath("/admin/projects");
-        return { success: "Project archived." };
+        return { success: "Project archived and storage cleared." };
     } catch (error) {
         console.error("deleteProject error:", error);
         return { error: "Deconstruction failed." };

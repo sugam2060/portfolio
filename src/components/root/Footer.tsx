@@ -1,5 +1,6 @@
-import { Bot, Zap } from "lucide-react";
+import { Bot } from "lucide-react";
 import Link from "next/link";
+import { RiAdminLine } from "react-icons/ri";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -50,7 +51,9 @@ export default function Footer() {
                 <div className="w-full h-px bg-border/50 dark:bg-[#282e39] my-4"></div>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground dark:text-[#9ca6ba]">
                     <p>© {currentYear} Sugam Pudasaini. All rights reserved.</p>
-                    <p className="flex items-center gap-1">Built with <Zap className="size-3 text-primary" fill="currentColor" /> intelligence</p>
+                    <Link href="/login" className="hover:text-primary transition-colors opacity-50 hover:opacity-100">
+                        <RiAdminLine className="size-4" />
+                    </Link>
                 </div>
             </div>
         </footer>

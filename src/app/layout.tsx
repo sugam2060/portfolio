@@ -6,6 +6,8 @@ export const metadata: Metadata = {
 	description: "Portfolio of Sugam Pudasaini, an AI & Software Engineer turning complex problems into scalable solutions.",
 };
 
+import Providers from "@/components/providers/Providers";
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -17,7 +19,9 @@ export default function RootLayout({
 				<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 			</head>
 			<body className="antialiased font-sans">
-				{children}
+				<Providers>
+					{children}
+				</Providers>
 			</body>
 		</html>
 	);

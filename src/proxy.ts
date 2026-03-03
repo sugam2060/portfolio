@@ -3,9 +3,9 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 /**
- * Middleware to protect admin routes
+ * Proxy to protect admin routes
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const isLoginPage = pathname === "/login";
     const isAdminPath = pathname.startsWith("/admin");
@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
 }
 
 /**
- * Configure which routes the middleware should run on
+ * Configure which routes the proxy should run on
  */
 export const config = {
     matcher: [

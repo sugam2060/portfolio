@@ -3,7 +3,7 @@
 import { getDb } from "@/db";
 import { projects, projectGallery, featuredProjects, projectKeyFeatures } from "@/db/schema";
 import { ProjectSchema } from "@/types/projects";
-import { eq, desc, asc, sql } from "drizzle-orm";
+import { eq, desc, asc, sql, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
@@ -13,12 +13,13 @@ const FEATURED_PROJECTS_CACHE_KEY = "projects_featured";
 
 // --- FETCHING ---
 
-export const getProjects = async (page = 1, limit = 6) => {
+export const getProjects = async (page = 1, limit = 6, type?: string) => {
     try {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
         const offset = (page - 1) * limit;
-        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}`;
+        const filterType = type && type !== "All" ? type : null;
+        const cacheKey = `${PROJECTS_CACHE_KEY}_p${page}_l${limit}_t${filterType || "all"}`;
 
         // 1. Try KV Cache
         const cached = await kv.get(cacheKey);
@@ -27,9 +28,12 @@ export const getProjects = async (page = 1, limit = 6) => {
         // 2. Fetch from DB
         const db = await getDb();
 
+        const whereClause = filterType ? eq(projects.type, filterType) : undefined;
+
         // Parallel fetch for data and total count
         const [results, totalCount] = await Promise.all([
             db.query.projects.findMany({
+                where: whereClause,
                 columns: {
                     id: true,
                     title: true,
@@ -37,6 +41,7 @@ export const getProjects = async (page = 1, limit = 6) => {
                     techStack: true,
                     type: true,
                     link: true,
+                    github: true,
                 },
                 with: {
                     gallery: {
@@ -50,7 +55,9 @@ export const getProjects = async (page = 1, limit = 6) => {
                 limit: limit,
                 offset: offset,
             }),
-            db.select({ count: sql<number>`count(*)` }).from(projects)
+            db.select({ count: sql<number>`count(*)` })
+                .from(projects)
+                .where(whereClause)
         ]);
 
         // Truncate overview if needed
@@ -69,8 +76,8 @@ export const getProjects = async (page = 1, limit = 6) => {
             }
         };
 
-        // 3. Cache it
-        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 3600 }); // 1 hour for paginated pages
+        // 3. Cache it (shorter for filtered results)
+        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 3600 });
 
         return response;
     } catch (error) {
@@ -91,8 +98,17 @@ export const getFeaturedProjects = async () => {
         const results = await db.query.featuredProjects.findMany({
             with: {
                 project: {
+                    columns: {
+                        id: true,
+                        title: true,
+                        overview: true,
+                        techStack: true,
+                        type: true,
+                        link: true,
+                        github: true,
+                    },
                     with: {
-                        gallery: { limit: 1 },
+                        gallery: { columns: { photoUrl: true }, limit: 1 },
                         keyFeatures: true,
                     },
                 },
@@ -164,15 +180,21 @@ export const createProject = async (formData: FormData) => {
                 httpMetadata: { contentType: file.type }
             });
 
-            const publicUrl = `${process.env.R2_PUBLIC_URL}/${fileName}`;
+            // Use env.R2_PUBLIC_URL for consistency
+            const baseUrl = env.R2_PUBLIC_URL || "";
+            const publicUrl = `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${fileName}`;
+
             await db.insert(projectGallery).values({
                 projectId: newProject.id,
                 photoUrl: publicUrl,
             });
         }
 
-        // 5. Invalidate Cache
-        await kv.delete(PROJECTS_CACHE_KEY);
+        // 5. Invalidate All Project Caches
+        const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
+        for (const key of projectKeys.keys) {
+            await kv.delete(key.name);
+        }
 
         revalidatePath("/projects");
         revalidatePath("/admin/projects");
@@ -188,14 +210,14 @@ export const deleteProject = async (id: number) => {
         const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const db = await getDb();
         const kv = env.portfolio_kv;
-        const bucket = env["portfolio-r2"];
-
-        // Optional: Clean up R2 (list and delete)
-        // For brevity skipping detailed R2 cleanup, but usually good practice.
 
         await db.delete(projects).where(eq(projects.id, id));
 
-        await kv.delete(PROJECTS_CACHE_KEY);
+        // Clear All Project & Featured Caches
+        const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
+        for (const key of projectKeys.keys) {
+            await kv.delete(key.name);
+        }
         await kv.delete(FEATURED_PROJECTS_CACHE_KEY);
 
         revalidatePath("/projects");
@@ -219,6 +241,11 @@ export const toggleFeaturedProject = async (projectId: number, isFeatured: boole
             await db.delete(featuredProjects).where(eq(featuredProjects.projectId, projectId));
         }
 
+        // Clear All Project & Featured Caches
+        const projectKeys = await kv.list({ prefix: PROJECTS_CACHE_KEY });
+        for (const key of projectKeys.keys) {
+            await kv.delete(key.name);
+        }
         await kv.delete(FEATURED_PROJECTS_CACHE_KEY);
 
         revalidatePath("/");

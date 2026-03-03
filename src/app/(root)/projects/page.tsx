@@ -4,6 +4,7 @@ import { Sparkles, Bot, ServerCog, Globe, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getProjects, getFeaturedProjects } from "@/actions/ProjectActions";
 import { Suspense } from "react";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 
 export const dynamic = "force-dynamic";
 
@@ -15,25 +16,26 @@ interface SearchParams {
 export default async function ProjectsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams;
     const currentPage = parseInt(params.page || "1", 10);
+    const currentType = params.type || "All";
+    const limit = 6;
 
-    // 6 projects per page
-    const [projectsResponse, featuredData] = await Promise.all([
-        getProjects(currentPage, 6),
-        getFeaturedProjects()
-    ]);
+    const queryClient = new QueryClient();
 
-    const projects = projectsResponse?.data || [];
-    const pagination = projectsResponse?.pagination || { total: 0, page: 1, limit: 6, totalPages: 0 };
+    // Prefetch projects with type filter
+    await queryClient.prefetchQuery({
+        queryKey: ["projects", currentPage, limit, currentType],
+        queryFn: () => getProjects(currentPage, limit, currentType),
+    });
+
+    const featuredData = await getFeaturedProjects();
     const featuredResults = Array.isArray(featuredData) ? featuredData : [];
-
-    // Extract the actual project from the join table result
     const featuredProject = featuredResults[0]?.project;
 
     const filters = [
-        { label: "All", icon: <Sparkles className="size-4" />, active: !params.type || params.type === "All" },
-        { label: "AI/ML", icon: <Bot className="size-4" />, active: params.type === "AI/ML" },
-        { label: "Backend", icon: <ServerCog className="size-4" />, active: params.type === "Backend" },
-        { label: "Web Dev", icon: <Globe className="size-4" />, active: params.type === "Web Dev" },
+        { label: "All", icon: <Sparkles className="size-4" />, active: currentType === "All" },
+        { label: "AI/ML", icon: <Bot className="size-4" />, active: currentType === "AI/ML" },
+        { label: "Backend", icon: <ServerCog className="size-4" />, active: currentType === "Backend" },
+        { label: "Web Dev", icon: <Globe className="size-4" />, active: currentType === "Web Dev" },
     ];
 
     return (
@@ -55,6 +57,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
                         <Link
                             key={index}
                             href={`?type=${filter.label}`}
+                            scroll={false}
                             className={`group flex h-10 items-center justify-center gap-x-2 rounded-full px-6 transition-all border ${filter.active
                                 ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
                                 : "bg-surface-dark dark:bg-[#1b1f27] border-border/50 dark:border-[#282e39] text-muted-foreground dark:text-[#9ca6ba] hover:border-primary/50 hover:text-primary"
@@ -66,11 +69,22 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
                     ))}
                 </div>
 
-                {featuredProject && <FeaturedProjectCard project={featuredProject} />}
+                {/* Featured Project - Only shown on 'All' or if relevant to filter (keeping it simple for now) */}
+                {featuredProject && (currentType === "All" || featuredProject.type === currentType) && (
+                    <FeaturedProjectCard project={featuredProject} />
+                )}
 
-                <Suspense fallback={<div className="h-40 flex items-center justify-center"><p className="animate-pulse">Loading Grid...</p></div>}>
-                    <ProjectGrid projects={projects} pagination={pagination} />
-                </Suspense>
+                {/* Hydrated Project Grid */}
+                <HydrationBoundary state={dehydrate(queryClient)}>
+                    <Suspense fallback={
+                        <div className="h-40 flex flex-col items-center justify-center gap-3">
+                            <Bot className="size-8 animate-bounce text-primary/40" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">Initializing Grid...</p>
+                        </div>
+                    }>
+                        <ProjectGrid />
+                    </Suspense>
+                </HydrationBoundary>
 
                 <div className="flex justify-center mt-8 mb-12">
                     <Link href="#" className="group flex items-center justify-center gap-2 rounded-xl px-10 py-4 bg-transparent border-2 border-border/50 dark:border-[#282e39] hover:border-primary text-muted-foreground dark:text-[#9ca6ba] hover:text-primary transition-all font-black uppercase tracking-widest text-sm shadow-sm hover:shadow-xl hover:shadow-primary/5">

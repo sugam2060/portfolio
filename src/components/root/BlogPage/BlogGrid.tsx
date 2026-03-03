@@ -13,11 +13,12 @@ export default function BlogGrid() {
     const router = useRouter();
 
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const search = searchParams.get("query") || "";
     const limit = 6;
 
     const { data: response, isLoading, isPlaceholderData } = useQuery({
-        queryKey: ["blogs", page, limit],
-        queryFn: () => getBlogs(page, limit),
+        queryKey: ["blogs", page, limit, search],
+        queryFn: () => getBlogs(page, limit, search),
         placeholderData: (previousData) => previousData,
     });
 
@@ -43,7 +44,9 @@ export default function BlogGrid() {
     if (!isLoading && blogs.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-                <p className="text-muted-foreground text-lg italic">The archive is currently quiet. Check back soon.</p>
+                <p className="text-muted-foreground text-lg italic">
+                    {search ? `No articles found for "${search}". Try a different term.` : "The archive is currently quiet. Check back soon."}
+                </p>
             </div>
         );
     }

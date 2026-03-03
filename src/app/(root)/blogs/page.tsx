@@ -17,16 +17,14 @@ export default function BlogPage() {
                 </p>
             </div>
 
-            {/* Search and Filters */}
-            <Searchbar />
-
-            {/* Blog Grid */}
+            {/* Search and Blog Content */}
             <Suspense fallback={
                 <div className="flex flex-col items-center justify-center py-20">
                     <Spinner className="size-12 text-primary" />
-                    <p className="mt-4 text-muted-foreground animate-pulse font-black uppercase tracking-widest text-xs">Loading context...</p>
+                    <p className="mt-4 text-muted-foreground animate-pulse font-black uppercase tracking-widest text-xs">Initializing research deck...</p>
                 </div>
             }>
+                <Searchbar />
                 <BlogGrid />
             </Suspense>
 

@@ -13,13 +13,13 @@ const BLOG_DETAIL_CACHE_KEY = "blog_detail";
 
 // --- FETCHING ---
 
-export const getBlogs = async (page = 1, limit = 6) => {
+export const getBlogs = async (page = 1, limit = 6, search = "") => {
     try {
         const { env } = await getCloudflareContext({ async: true }) as unknown as { env: CloudflareEnv };
         const kv = env.portfolio_kv;
 
         const offset = (page - 1) * limit;
-        const cacheKey = `${BLOGS_CACHE_KEY}_p${page}_l${limit}`;
+        const cacheKey = `${BLOGS_CACHE_KEY}_p${page}_l${limit}_s${search.toLowerCase().replace(/\s+/g, '_')}`;
 
         // 1. Check KV cache
         const cached = await kv.get(cacheKey, "json");
@@ -27,30 +27,45 @@ export const getBlogs = async (page = 1, limit = 6) => {
 
         // 2. Fetch from DB
         const db = await getDb();
+
+        let query = db.select().from(blogs);
+        let countQuery = db.select({ count: sql<number>`count(*)` }).from(blogs);
+
+        if (search) {
+            const searchPattern = `%${search.toLowerCase()}%`;
+            const filterClause = sql`lower(${blogs.title}) LIKE ${searchPattern} OR lower(${blogs.description}) LIKE ${searchPattern} OR lower(${blogs.type}) LIKE ${searchPattern}`;
+            // @ts-ignore
+            query = query.where(filterClause);
+            // @ts-ignore
+            countQuery = countQuery.where(filterClause);
+        }
+
         const [results, totalCount] = await Promise.all([
-            db.select().from(blogs)
-                .orderBy(desc(blogs.createdAt))
-                .limit(limit)
-                .offset(offset),
-            db.select({ count: sql<number>`count(*)` }).from(blogs)
+            query.orderBy(desc(blogs.createdAt)).limit(limit).offset(offset),
+            countQuery
         ]);
+
+        const totalItems = totalCount[0].count;
+        const totalPages = Math.ceil(totalItems / limit);
 
         const response = {
             data: results,
             pagination: {
-                total: totalCount[0].count,
+                total: totalItems,
                 page,
                 limit,
-                totalPages: Math.ceil(totalCount[0].count / limit),
+                totalPages,
+                hasNext: page < totalPages,
+                hasPrev: page > 1
             }
         };
 
         // 3. Cache and return
-        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 86400 });
+        await kv.put(cacheKey, JSON.stringify(response), { expirationTtl: 3600 }); // Cache shorter for search results
         return response;
     } catch (error) {
         console.error("getBlogs error:", error);
-        return { error: "Failed to fetch blogs", data: [], pagination: { total: 0, page, limit, totalPages: 0 } };
+        return { error: "Failed to fetch blogs", data: [], pagination: { total: 0, page, limit, totalPages: 0, hasNext: false, hasPrev: false } };
     }
 };
 

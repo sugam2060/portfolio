@@ -1,0 +1,31 @@
+
+> portfolio@0.1.0 build
+> next build
+
+▲ Next.js 16.1.5 (Turbopack)
+- Experiments (use with caution):
+  · serverActions
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.9s
+  Running TypeScript ...
+Using vars defined in .dev.vars
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/12) ...
+  Generating static pages using 15 workers (3/12) 
+  Generating static pages using 15 workers (6/12) 
+⨯ useSearchParams() should be wrapped in a suspense boundary at page "/blogs". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+    at Q (D:\projects\portfolio\.next\server\chunks\ssr\node_modules_next_920e7746._.js:2:2111)
+    at o (D:\projects\portfolio\.next\server\chunks\ssr\node_modules_next_920e7746._.js:4:5284)
+    at h (D:\projects\portfolio\.next\server\chunks\ssr\[root-of-the-server]__c4f71689._.js:1:12377)
+    at an (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:84360)
+    at ai (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:86179)
+    at ai (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:104708)
+    at al (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:107953)
+    at as (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:105368)
+    at am (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:112882)
+    at au (D:\projects\portfolio\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:109985)
+Error occurred prerendering page "/blogs". Read more: https://nextjs.org/docs/messages/prerender-error
+Export encountered an error on /(root)/blogs/page: /blogs, exiting the build.
+⨯ Next.js build worker exited with code: 1 and signal: null

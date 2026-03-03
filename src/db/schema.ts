@@ -84,6 +84,19 @@ export const blogs = sqliteTable("blogs", {
     updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
+export const experiences = sqliteTable("experiences", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    companyName: text("company_name").notNull(),
+    role: text("role").notNull(),
+    duration: text("duration").notNull(),
+    location: text("location").notNull(),
+    description: text("description").notNull(), // Stores array of points as JSON string
+    skills: text("skills").notNull(), // Stores array of string as JSON string
+    order: integer("order").default(0),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+});
+
 // Relations
 export const projectsRelations = relations(projects, ({ many, one }) => ({
     keyFeatures: many(projectKeyFeatures),
@@ -141,4 +154,7 @@ export type NewFeaturedProject = typeof featuredProjects.$inferInsert;
 
 export type Blog = typeof blogs.$inferSelect;
 export type NewBlog = typeof blogs.$inferInsert;
+
+export type Experience = typeof experiences.$inferSelect;
+export type NewExperience = typeof experiences.$inferInsert;
 

@@ -39,14 +39,22 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
         },
     });
 
+    const [previewUrl, setPreviewUrl] = useState<string>(initialData?.imageUrl || "");
+
     const { mutate, isPending } = useMutation({
         mutationFn: updateHeroSection,
         onSuccess: (data: any) => {
             if (data.error) {
-                toast.error("Error updating hero section");
+                toast.error(typeof data.error === 'string' ? data.error : "Failed to update hero section");
             } else {
                 toast.success("Hero section updated!");
                 queryClient.invalidateQueries({ queryKey: ["homepage-data"] });
+                // If a new image was uploaded, the server should return the new URL
+                // and we should update the form's imageUrl and previewUrl
+                if (data.imageUrl) {
+                    form.setValue("imageUrl", data.imageUrl);
+                    setPreviewUrl(data.imageUrl);
+                }
             }
         },
     });
@@ -57,7 +65,10 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
         formData.append("subHeading", data.subHeading);
         formData.append("imgTextHeading", data.imgTextHeading);
         formData.append("imgTextSubHeading", data.imgTextSubHeading);
-        formData.append("imageUrl", data.imageUrl || "");
+        // Only append imageUrl if no new file is selected, otherwise the server will handle it
+        if (!fileInputRef.current?.files?.[0]) {
+            formData.append("imageUrl", data.imageUrl || "");
+        }
 
         const file = fileInputRef.current?.files?.[0];
         if (file) {
@@ -70,16 +81,24 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Preview or simple state update if needed
-            toast.info(`Selected: ${file.name}`);
+            // Preview the locally selected file
+            const transientUrl = URL.createObjectURL(file);
+            setPreviewUrl(transientUrl);
+            toast.info(`Image selected: ${file.name}`);
+            // Clear the form's imageUrl field if a new file is selected,
+            // as the server will provide the new URL upon successful upload.
+            form.setValue("imageUrl", "");
+        } else {
+            // If file selection is cancelled, revert preview to initial or current form value
+            setPreviewUrl(form.getValues("imageUrl") || initialData?.imageUrl || "");
         }
     };
 
     return (
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <LuImagePlus className="text-primary" />
+                    <LuImagePlus className="text-primary animate-pulse" />
                     Hero Section
                 </CardTitle>
                 <CardDescription>
@@ -89,6 +108,21 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+                        {/* Image Preview Area */}
+                        {(previewUrl || form.getValues("imageUrl")) && (
+                            <div className="relative w-full h-48 rounded-xl overflow-hidden group border border-border/50">
+                                <img
+                                    src={previewUrl || form.getValues("imageUrl")}
+                                    alt="Hero Preview"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                    <p className="text-white text-sm font-medium">Click upload icon to change</p>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="grid md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -152,10 +186,10 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
                             name="imageUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Hero Image URL</FormLabel>
+                                    <FormLabel>Hero Image URL / key</FormLabel>
                                     <div className="flex gap-2">
                                         <FormControl>
-                                            <Input placeholder="https://..." {...field} className="flex-1" />
+                                            <Input placeholder="Upload an image..." {...field} className="flex-1" readOnly />
                                         </FormControl>
                                         <input
                                             type="file"
@@ -167,10 +201,9 @@ export default function EditHeroSection({ initialData }: { initialData?: any }) 
                                         <Button
                                             type="button"
                                             variant="secondary"
-                                            disabled={isUploading}
                                             onClick={() => fileInputRef.current?.click()}
                                         >
-                                            {isUploading ? <Spinner className="h-4 w-4" /> : <LuImagePlus className="h-4 w-4" />}
+                                            <LuImagePlus className="h-4 w-4" />
                                         </Button>
                                     </div>
                                     <FormDescription>

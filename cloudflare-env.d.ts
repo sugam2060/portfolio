@@ -9,6 +9,7 @@ declare namespace Cloudflare {
         "portfolio-r2": R2Bucket;
         portfolio_kv: KVNamespace;
         JWT_SECRET: string;
+        R2_PUBLIC_URL: string;
     }
 }
 interface CloudflareEnv extends Cloudflare.Env { }

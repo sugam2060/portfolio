@@ -34,8 +34,16 @@ export const getHomepageData = async () => {
         const [about] = await db.select().from(aboutSection).limit(1);
         const expertiseList = await db.select().from(expertise);
 
+        const publicUrl = env.R2_PUBLIC_URL || "";
+        let finalHeroImageUrl = hero?.imageUrl || "";
+
+        // Auto-prefix if it's just a filename and we have a public URL
+        if (finalHeroImageUrl && !finalHeroImageUrl.startsWith("http") && publicUrl) {
+            finalHeroImageUrl = `${publicUrl}/${finalHeroImageUrl}`;
+        }
+
         const data = {
-            hero: hero || null,
+            hero: hero ? { ...hero, imageUrl: finalHeroImageUrl } : null,
             about: about || null,
             expertise: expertiseList.map(e => ({
                 ...e,
@@ -70,28 +78,42 @@ const invalidateHomepageCache = async () => {
 import { uploadFileToR2 } from "./utils/r2_client";
 
 export const updateHeroSection = async (formData: FormData) => {
-    const data = {
-        heading: formData.get("heading") as string,
-        subHeading: formData.get("subHeading") as string,
-        imgTextHeading: formData.get("imgTextHeading") as string,
-        imgTextSubHeading: formData.get("imgTextSubHeading") as string,
-        imageUrl: formData.get("imageUrl") as string,
-    };
-
-    const validation = HeroSectionSchema.safeParse(data);
-    if (!validation.success) return { error: validation.error.flatten().fieldErrors };
-
-    const file = formData.get("file") as File;
-
     try {
+        const { env } = getCloudflareContext() as unknown as { env: CloudflareEnv };
         const db = await getDb();
-        let finalImageUrl = data.imageUrl;
+
+        const data = {
+            heading: formData.get("heading") as string,
+            subHeading: formData.get("subHeading") as string,
+            imgTextHeading: formData.get("imgTextHeading") as string,
+            imgTextSubHeading: formData.get("imgTextSubHeading") as string,
+            imageUrl: formData.get("imageUrl") as string,
+        };
+
+        const validation = HeroSectionSchema.safeParse(data);
+        if (!validation.success) {
+            return { error: validation.error.flatten().fieldErrors };
+        }
+
+        const file = formData.get("file") as File;
+        let finalImageUrl = data.imageUrl || "";
 
         // If a new file is uploaded, process it
         if (file && file.size > 0) {
-            const filename = await uploadFileToR2(file);
-            // Construct your public R2 URL here if needed, or store the key
-            finalImageUrl = filename;
+            try {
+                const filename = await uploadFileToR2(file);
+                // If the user has a public R2 URL prefix, use it. Otherwise, store the filename.
+                const publicUrl = env.R2_PUBLIC_URL || "";
+                finalImageUrl = publicUrl ? `${publicUrl}/${filename}` : filename;
+            } catch (uploadError: any) {
+                console.error("R2 Upload Error:", uploadError);
+                return { error: `Image upload failed: ${uploadError.message}` };
+            }
+        }
+
+        // Final check: imageUrl is notNull in DB
+        if (!finalImageUrl) {
+            return { error: "Hero image is required." };
         }
 
         const existing = await db.select().from(heroSection).limit(1);
@@ -113,10 +135,13 @@ export const updateHeroSection = async (formData: FormData) => {
 
         revalidatePath("/");
         await invalidateHomepageCache();
-        return { success: "Hero section updated successfully!" };
-    } catch (error) {
-        console.error("Update hero error:", error);
-        return { error: "Failed to update hero section." };
+        return {
+            success: "Hero section updated successfully!",
+            imageUrl: finalImageUrl
+        };
+    } catch (error: any) {
+        console.error("Update hero action failed:", error);
+        return { error: error.message || "An unexpected error occurred while updating the hero section." };
     }
 };
 

@@ -108,52 +108,7 @@ export default function Header() {
             </div>
 
             {/* Mobile Menu Overlay */}
-            <AnimatePresence>
-                {isMenuOpen && (
-                    <>
-                        {/* Backdrop */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsMenuOpen(false)}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[90] md:hidden"
-                        />
-                        
-                        {/* Menu Panel */}
-                        <motion.div
-                            variants={menuVariants}
-                            initial="closed"
-                            animate="open"
-                            exit="closed"
-                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-black z-[100] md:hidden border-l border-white/10 shadow-2xl flex flex-col pt-24 px-6"
-                            style={{ backgroundColor: '#000000' }}
-                        >
-                            <nav className="flex flex-col gap-4">
-                                {navLinks.map((link) => (
-                                    <motion.div key={link.name} variants={linkVariants}>
-                                        <Link
-                                            href={link.href}
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="text-xl font-semibold text-white hover:text-primary hover:bg-white/10 transition-all block py-4 px-6 rounded-xl border border-white/10 bg-white/5"
-                                        >
-                                            {link.name}
-                                        </Link>
-                                    </motion.div>
-                                ))}
-                                
-                                <motion.div variants={linkVariants} className="pt-8 border-t border-white/10">
-                                    <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
-                                        <button className="w-full flex items-center justify-center rounded-xl h-14 bg-primary hover:bg-blue-600 transition-colors text-white text-lg font-bold shadow-lg shadow-primary/20">
-                                            Hire Me
-                                        </button>
-                                    </Link>
-                                </motion.div>
-                            </nav>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+            
         </header>
     );
 }

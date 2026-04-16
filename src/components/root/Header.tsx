@@ -126,7 +126,7 @@ export default function Header() {
                             initial="closed"
                             animate="open"
                             exit="closed"
-                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-zinc-950 z-[100] md:hidden border-l border-white/10 shadow-2xl flex flex-col pt-24 px-6"
+                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#09090b] z-[100] md:hidden border-l border-white/10 shadow-2xl flex flex-col pt-24 px-6"
                         >
                             <nav className="flex flex-col gap-4">
                                 {navLinks.map((link) => (

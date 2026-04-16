@@ -126,15 +126,15 @@ export default function Header() {
                             initial="closed"
                             animate="open"
                             exit="closed"
-                            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-zinc-950/95 dark:bg-[#0d0f14]/95 backdrop-blur-2xl z-50 md:hidden border-l border-border/50 dark:border-[#282e39] shadow-2xl flex flex-col pt-24 px-8"
+                            className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-[#0a0a0a] z-50 md:hidden border-l border-border/50 dark:border-[#282e39] shadow-2xl flex flex-col pt-24 px-6"
                         >
-                            <nav className="flex flex-col gap-8">
+                            <nav className="flex flex-col gap-4">
                                 {navLinks.map((link) => (
                                     <motion.div key={link.name} variants={linkVariants}>
                                         <Link
                                             href={link.href}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="text-2xl font-bold text-white hover:text-primary transition-colors"
+                                            className="text-xl font-semibold text-white hover:text-primary hover:bg-white/5 transition-all block py-4 px-6 rounded-xl border border-white/5 hover:border-primary/20 bg-zinc-900/50"
                                         >
                                             {link.name}
                                         </Link>

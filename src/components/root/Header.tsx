@@ -78,37 +78,7 @@ export default function Header() {
                         </Link>
                     ))}
                 </nav>
-
-                <div className="flex items-center gap-4">
-                    <Link href="/contact" className="hidden sm:block">
-                        <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-blue-600 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
-                            <span className="truncate">Hire Me</span>
-                        </button>
-                    </Link>
-
-                    {/* Mobile Menu Toggle Button */}
-                    <button 
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden p-2 text-foreground dark:text-white focus:outline-none z-[60]"
-                        aria-label="Toggle menu"
-                    >
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={isMenuOpen ? "close" : "open"}
-                                initial={{ opacity: 0, rotate: -90 }}
-                                animate={{ opacity: 1, rotate: 0 }}
-                                exit={{ opacity: 0, rotate: 90 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                {isMenuOpen ? <HiX size={28} /> : <HiMenu size={28} />}
-                            </motion.div>
-                        </AnimatePresence>
-                    </button>
-                </div>
             </div>
-
-            {/* Mobile Menu Overlay */}
-            
         </header>
     );
 }

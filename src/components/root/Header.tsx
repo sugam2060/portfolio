@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Bot } from "lucide-react";
 import { useState, useEffect } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function Header() {
         { name: "Experience", href: "/experience" },
     ];
 
-    const menuVariants = {
+    const menuVariants: Variants = {
         closed: {
             x: "100%",
             transition: {
@@ -49,7 +49,7 @@ export default function Header() {
         }
     };
 
-    const linkVariants = {
+    const linkVariants: Variants = {
         closed: { opacity: 0, x: 20 },
         open: { opacity: 1, x: 0 }
     };
